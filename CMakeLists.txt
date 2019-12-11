@@ -6,7 +6,5 @@ add_definitions("-std=c++11")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-file(GLOB_RECURSE SOURCE_FILES "src/*cpp")
-
-add_executable(regime ${SOURCE_FILES})
+add_executable(regime "src/regime.cpp")
 target_link_libraries(regime ${CONAN_LIBS})
