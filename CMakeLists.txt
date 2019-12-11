@@ -8,5 +8,5 @@ conan_basic_setup()
 
 file(GLOB_RECURSE SOURCE_FILES "src/*cpp")
 
-add_library(regime ${SOURCE_FILES})
+add_executable(regime ${SOURCE_FILES})
 target_link_libraries(regime ${CONAN_LIBS})
