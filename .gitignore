@@ -33,3 +33,4 @@ install_manifest.txt
 
 # Custom
 build/
+.vscode/
