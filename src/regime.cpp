@@ -1,6 +1,8 @@
 #include "Poco/Net/HTTPClientSession.h"
+#include "Poco/Net/HTTPSClientSession.h"
 #include "Poco/Net/HTTPRequest.h"
 #include "Poco/Net/HTTPResponse.h"
+#include "Poco/Net/Context.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/Path.h"
 #include "Poco/URI.h"
@@ -10,10 +12,14 @@
 #include <string>
 
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
     Poco::URI uri("https://api.anz/cds-au/v1/banking/products");
-    Poco::Net::HTTPClientSession session(uri.getHost(), uri.getPort());
+    const Poco::Net::Context::Ptr context = new Poco::Net::Context(Poco::Net::Context::CLIENT_USE,
+                                                                   "", "", "",
+                                                                   Poco::Net::Context::VERIFY_NONE,
+                                                                   9, false,
+                                                                   "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH");
+    Poco::Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), context);
 
     std::string path(uri.getPathAndQuery());
 
