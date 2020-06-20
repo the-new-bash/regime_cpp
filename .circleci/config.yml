@@ -1,0 +1,44 @@
+version: 2.1
+jobs:
+  gcc-10:
+    docker:
+      - image: conanio/gcc10
+    steps:
+      - build-tools/install-ci-tools
+      - run:
+          name: Download Build Wrapper
+          command: |
+            mkdir $HOME/.sonar
+            curl -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+            unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+      - checkout
+      - run:
+          name: Install Conan Dependencies
+          command: |
+            sudo pip install --upgrade conan
+            conan install . -if=build -b=missing
+      - run:
+          name: Build Conan Package
+          command: |
+            export PATH=$HOME/.sonar/build-wrapper-linux-x86:$PATH
+            build-wrapper-linux-x86-64 --out-dir wrapper_output conan build . -bf=build
+      - run:
+          name: Execute Unit Tests
+          command: |
+            cd build
+            make test
+      - run:
+          name: Code Coverage
+          command: |
+            cd build
+            make gcov
+      - sonarcloud/scan
+
+orbs:
+  sonarcloud: sonarsource/sonarcloud@1.0.1
+  build-tools: circleci/build-tools@2.6.3
+workflows:
+  build_and_test:
+    jobs:
+      - gcc-10:
+          context: sonarcloud
