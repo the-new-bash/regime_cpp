@@ -1,7 +1,11 @@
-#include <v1/types.hpp>
+#include "v1/types.hpp"
+#include "v1/requests.hpp"
+#include "v1/responses.hpp"
 #include "types.hpp"
 #include "Poco/JSON/Parser.h"
 #include "gtest/gtest.h"
+#include "requests.hpp"
+#include "responses.hpp"
 
 static Poco::JSON::Parser parser;
 static Poco::JSON::Object::Ptr object;
@@ -21,11 +25,12 @@ TEST(TypeDeserialization, BankingProductV2)
     EXPECT_STREQ(product.brand_name->c_str(), "string");
     EXPECT_STREQ(product.application_uri->c_str(), "string");
     EXPECT_EQ(product.is_tailored, true);
-    EXPECT_STREQ(product.additional_information->overview_uri->c_str(), "string");
-    EXPECT_STREQ(product.additional_information->terms_uri->c_str(), "string");
-    EXPECT_STREQ(product.additional_information->eligibility_uri->c_str(), "string");
-    EXPECT_STREQ(product.additional_information->fees_and_pricing_uri->c_str(), "string");
-    EXPECT_STREQ(product.additional_information->bundle_uri->c_str(), "string");
+    auto additional_information = product.additional_information;
+    EXPECT_STREQ(additional_information->overview_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->terms_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->eligibility_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->fees_and_pricing_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->bundle_uri->c_str(), "string");
     EXPECT_STREQ(product.card_art.value()[0].title->c_str(), "string");
     EXPECT_STREQ(product.card_art.value()[0].image_uri.c_str(), "string");
 }
@@ -35,24 +40,26 @@ TEST(TypeDeserialization, BankingProductDetail)
     object = parser.parse(BANKING_PRODUCT_DETAIL).extract<Poco::JSON::Object::Ptr>();
     BankingProductDetail product_detail;
     product_detail.deserialize(object);
-    EXPECT_STREQ(product_detail.product->product_id.c_str(), "string");
-    EXPECT_STREQ(product_detail.product->effective_from->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->effective_to->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->last_updated.c_str(), "string");
-    EXPECT_EQ(product_detail.product->product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
-    EXPECT_STREQ(product_detail.product->name.c_str(), "string");
-    EXPECT_STREQ(product_detail.product->description.c_str(), "string");
-    EXPECT_STREQ(product_detail.product->brand.c_str(), "string");
-    EXPECT_STREQ(product_detail.product->brand_name->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->application_uri->c_str(), "string");
-    EXPECT_EQ(product_detail.product->is_tailored, true);
-    EXPECT_STREQ(product_detail.product->additional_information->overview_uri->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->additional_information->terms_uri->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->additional_information->eligibility_uri->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->additional_information->fees_and_pricing_uri->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->additional_information->bundle_uri->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->card_art.value()[0].title->c_str(), "string");
-    EXPECT_STREQ(product_detail.product->card_art.value()[0].image_uri.c_str(), "string");
+    auto product = product_detail.product;
+    EXPECT_STREQ(product->product_id.c_str(), "string");
+    EXPECT_STREQ(product->effective_from->c_str(), "string");
+    EXPECT_STREQ(product->effective_to->c_str(), "string");
+    EXPECT_STREQ(product->last_updated.c_str(), "string");
+    EXPECT_EQ(product->product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
+    EXPECT_STREQ(product->name.c_str(), "string");
+    EXPECT_STREQ(product->description.c_str(), "string");
+    EXPECT_STREQ(product->brand.c_str(), "string");
+    EXPECT_STREQ(product->brand_name->c_str(), "string");
+    EXPECT_STREQ(product->application_uri->c_str(), "string");
+    EXPECT_EQ(product->is_tailored, true);
+    auto additional_information = product->additional_information;
+    EXPECT_STREQ(additional_information->overview_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->terms_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->eligibility_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->fees_and_pricing_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->bundle_uri->c_str(), "string");
+    EXPECT_STREQ(product->card_art.value()[0].title->c_str(), "string");
+    EXPECT_STREQ(product->card_art.value()[0].image_uri.c_str(), "string");
     EXPECT_STREQ(product_detail.bundles.value()[0].name.c_str(), "string");
 }
 
@@ -117,22 +124,22 @@ TEST(TypeDeserialization, BankingProductFee)
     EXPECT_STREQ(product_fee.additional_value->c_str(), "string");
     EXPECT_STREQ(product_fee.additional_info->c_str(), "string");
     EXPECT_STREQ(product_fee.additional_info_uri->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].description.c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].description.c_str(), "string");
-    EXPECT_EQ(product_fee.discounts.value()[0].discount_type, DiscountType::BALANCE);
-    EXPECT_STREQ(product_fee.discounts.value()[0].amount->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].balance_rate->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].transaction_rate->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].accrued_rate->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].fee_rate->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].additional_info_uri->c_str(), "string");
-    EXPECT_EQ(product_fee.discounts.value()[0].eligibility.value()[0].discount_eligibility_type,
-              DiscountEligibilityType::BUSINESS);
-    EXPECT_STREQ(product_fee.discounts.value()[0].eligibility.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].eligibility.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(product_fee.discounts.value()[0].eligibility.value()[0].additional_info_uri->c_str(), "string");
+    auto discount = product_fee.discounts.value()[0];
+    EXPECT_STREQ(discount.description.c_str(), "string");
+    EXPECT_STREQ(discount.description.c_str(), "string");
+    EXPECT_EQ(discount.discount_type, DiscountType::BALANCE);
+    EXPECT_STREQ(discount.amount->c_str(), "string");
+    EXPECT_STREQ(discount.balance_rate->c_str(), "string");
+    EXPECT_STREQ(discount.transaction_rate->c_str(), "string");
+    EXPECT_STREQ(discount.accrued_rate->c_str(), "string");
+    EXPECT_STREQ(discount.fee_rate->c_str(), "string");
+    EXPECT_STREQ(discount.additional_value->c_str(), "string");
+    EXPECT_STREQ(discount.additional_info->c_str(), "string");
+    EXPECT_STREQ(discount.additional_info_uri->c_str(), "string");
+    EXPECT_EQ(discount.eligibility.value()[0].discount_eligibility_type, DiscountEligibilityType::BUSINESS);
+    EXPECT_STREQ(discount.eligibility.value()[0].additional_value->c_str(), "string");
+    EXPECT_STREQ(discount.eligibility.value()[0].additional_info->c_str(), "string");
+    EXPECT_STREQ(discount.eligibility.value()[0].additional_info_uri->c_str(), "string");
 }
 
 TEST(TypeDeserialization, BankingProductDiscount)
@@ -150,10 +157,11 @@ TEST(TypeDeserialization, BankingProductDiscount)
     EXPECT_STREQ(product_discount.additional_value->c_str(), "string");
     EXPECT_STREQ(product_discount.additional_info->c_str(), "string");
     EXPECT_STREQ(product_discount.additional_info_uri->c_str(), "string");
-    EXPECT_EQ(product_discount.eligibility.value()[0].discount_eligibility_type, DiscountEligibilityType::BUSINESS);
-    EXPECT_STREQ(product_discount.eligibility.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(product_discount.eligibility.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(product_discount.eligibility.value()[0].additional_info_uri->c_str(), "string");
+    auto eligibility = product_discount.eligibility.value()[0];
+    EXPECT_EQ(eligibility.discount_eligibility_type, DiscountEligibilityType::BUSINESS);
+    EXPECT_STREQ(eligibility.additional_value->c_str(), "string");
+    EXPECT_STREQ(eligibility.additional_info->c_str(), "string");
+    EXPECT_STREQ(eligibility.additional_info_uri->c_str(), "string");
 }
 
 TEST(TypeDeserialization, BankingProductDiscountEligibility)
@@ -176,25 +184,22 @@ TEST(TypeDeserialization, BankingProductDepositRate)
     EXPECT_STREQ(product_deposit_rate.rate.c_str(), "string");
     EXPECT_STREQ(product_deposit_rate.calculation_frequency->c_str(), "string");
     EXPECT_STREQ(product_deposit_rate.application_frequency->c_str(), "string");
-    EXPECT_STREQ(product_deposit_rate.tiers.value()[0].name.c_str(), "string");
-    EXPECT_EQ(product_deposit_rate.tiers.value()[0].unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(product_deposit_rate.tiers.value()[0].minimum_value, 0);
-    EXPECT_EQ(product_deposit_rate.tiers.value()[0].maximum_value, 0);
-    EXPECT_EQ(product_deposit_rate.tiers.value()[0].rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(product_deposit_rate.tiers.value()[0].applicability_conditions->additional_info->c_str(), "string");
-    EXPECT_STREQ(product_deposit_rate.tiers.value()[0].applicability_conditions->additional_info_uri->c_str(),
-                 "string");
-    EXPECT_STREQ(product_deposit_rate.tiers.value()[0].sub_tier->name.c_str(), "string");
-    EXPECT_STREQ(product_deposit_rate.tiers.value()[0].sub_tier->name.c_str(), "string");
-    EXPECT_EQ(product_deposit_rate.tiers.value()[0].sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(product_deposit_rate.tiers.value()[0].sub_tier->minimum_value, 0);
-    EXPECT_EQ(product_deposit_rate.tiers.value()[0].sub_tier->maximum_value, 0);
-    EXPECT_EQ(product_deposit_rate.tiers.value()[0].sub_tier->rate_application_method,
-              RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(product_deposit_rate.tiers.value()[0].sub_tier->applicability_conditions->additional_info->c_str(),
-                 "string");
-    EXPECT_STREQ(product_deposit_rate.tiers.value()[0].sub_tier->applicability_conditions->additional_info_uri->c_str(),
-                 "string");
+    auto tier = product_deposit_rate.tiers.value()[0];
+    EXPECT_STREQ(tier.name.c_str(), "string");
+    EXPECT_EQ(tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(tier.minimum_value, 0);
+    EXPECT_EQ(tier.maximum_value, 0);
+    EXPECT_EQ(tier.rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(tier.applicability_conditions->additional_info->c_str(), "string");
+    EXPECT_STREQ(tier.applicability_conditions->additional_info_uri->c_str(), "string");
+    EXPECT_STREQ(tier.sub_tier->name.c_str(), "string");
+    EXPECT_STREQ(tier.sub_tier->name.c_str(), "string");
+    EXPECT_EQ(tier.sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(tier.sub_tier->minimum_value, 0);
+    EXPECT_EQ(tier.sub_tier->maximum_value, 0);
+    EXPECT_EQ(tier.sub_tier->rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(tier.sub_tier->applicability_conditions->additional_info->c_str(), "string");
+    EXPECT_STREQ(tier.sub_tier->applicability_conditions->additional_info_uri->c_str(), "string");
     EXPECT_STREQ(product_deposit_rate.additional_value->c_str(), "string");
     EXPECT_STREQ(product_deposit_rate.additional_info->c_str(), "string");
     EXPECT_STREQ(product_deposit_rate.additional_info_uri->c_str(), "string");
@@ -211,24 +216,21 @@ TEST(TypeDeserialization, BankingProductLendingRate)
     EXPECT_STREQ(product_lending_rate.calculation_frequency->c_str(), "string");
     EXPECT_STREQ(product_lending_rate.application_frequency->c_str(), "string");
     EXPECT_EQ(product_lending_rate.interest_payment_due, InterestPaymentDue::IN_ARREARS);
-    EXPECT_STREQ(product_lending_rate.tiers.value()[0].name.c_str(), "string");
-    EXPECT_EQ(product_lending_rate.tiers.value()[0].unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(product_lending_rate.tiers.value()[0].minimum_value, 0);
-    EXPECT_EQ(product_lending_rate.tiers.value()[0].maximum_value, 0);
-    EXPECT_EQ(product_lending_rate.tiers.value()[0].rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(product_lending_rate.tiers.value()[0].applicability_conditions->additional_info->c_str(), "string");
-    EXPECT_STREQ(product_lending_rate.tiers.value()[0].applicability_conditions->additional_info_uri->c_str(),
-                 "string");
-    EXPECT_STREQ(product_lending_rate.tiers.value()[0].sub_tier->name.c_str(), "string");
-    EXPECT_EQ(product_lending_rate.tiers.value()[0].sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(product_lending_rate.tiers.value()[0].sub_tier->minimum_value, 0);
-    EXPECT_EQ(product_lending_rate.tiers.value()[0].sub_tier->maximum_value, 0);
-    EXPECT_EQ(product_lending_rate.tiers.value()[0].sub_tier->rate_application_method,
-              RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(product_lending_rate.tiers.value()[0].sub_tier->applicability_conditions->additional_info->c_str(),
-                 "string");
-    EXPECT_STREQ(product_lending_rate.tiers.value()[0].sub_tier->applicability_conditions->additional_info_uri->c_str(),
-                 "string");
+    auto tier = product_lending_rate.tiers.value()[0];
+    EXPECT_STREQ(tier.name.c_str(), "string");
+    EXPECT_EQ(tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(tier.minimum_value, 0);
+    EXPECT_EQ(tier.maximum_value, 0);
+    EXPECT_EQ(tier.rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(tier.applicability_conditions->additional_info->c_str(), "string");
+    EXPECT_STREQ(tier.applicability_conditions->additional_info_uri->c_str(), "string");
+    EXPECT_STREQ(tier.sub_tier->name.c_str(), "string");
+    EXPECT_EQ(tier.sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(tier.sub_tier->minimum_value, 0);
+    EXPECT_EQ(tier.sub_tier->maximum_value, 0);
+    EXPECT_EQ(tier.sub_tier->rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(tier.sub_tier->applicability_conditions->additional_info->c_str(), "string");
+    EXPECT_STREQ(tier.sub_tier->applicability_conditions->additional_info_uri->c_str(), "string");
     EXPECT_STREQ(product_lending_rate.additional_info->c_str(), "string");
     EXPECT_STREQ(product_lending_rate.additional_info_uri->c_str(), "string");
 }
@@ -322,134 +324,118 @@ TEST(TypeDeserialization, BankingAccountDetail)
     EXPECT_STREQ(account_detail.loan->repayment_frequency.c_str(), "string");
     EXPECT_STREQ(account_detail.deposit_rate->c_str(), "string");
     EXPECT_STREQ(account_detail.lending_rate->c_str(), "string");
-    EXPECT_EQ(account_detail.deposit_rates.value()[0].deposit_rate_type, DepositRateType::FIXED);
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].rate.c_str(), "string");
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].calculation_frequency->c_str(), "string");
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].application_frequency->c_str(), "string");
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].tiers.value()[0].name.c_str(), "string");
-    EXPECT_EQ(account_detail.deposit_rates.value()[0].tiers.value()[0].unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(account_detail.deposit_rates.value()[0].tiers.value()[0].minimum_value, 0);
-    EXPECT_EQ(account_detail.deposit_rates.value()[0].tiers.value()[0].minimum_value, 0);
-    EXPECT_STREQ(
-            account_detail.deposit_rates.value()[0].tiers.value()[0].applicability_conditions->additional_info->c_str(),
-            "string");
-    EXPECT_STREQ(
-            account_detail.deposit_rates.value()[0].tiers.value()[0].applicability_conditions->additional_info_uri->c_str(),
-            "string");
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].tiers.value()[0].sub_tier->name.c_str(), "string");
-    EXPECT_EQ(account_detail.deposit_rates.value()[0].tiers.value()[0].sub_tier->unit_of_measure,
-              UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(account_detail.deposit_rates.value()[0].tiers.value()[0].sub_tier->minimum_value, 0);
-    EXPECT_EQ(account_detail.deposit_rates.value()[0].tiers.value()[0].sub_tier->maximum_value, 0);
-    EXPECT_EQ(account_detail.deposit_rates.value()[0].tiers.value()[0].sub_tier->rate_application_method,
-              RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(
-            account_detail.deposit_rates.value()[0].tiers.value()[0].sub_tier->applicability_conditions->additional_info->c_str(),
-            "string");
-    EXPECT_STREQ(
-            account_detail.deposit_rates.value()[0].tiers.value()[0].sub_tier->applicability_conditions->additional_info_uri->c_str(),
-            "string");
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].additional_info_uri->c_str(), "string");
-    EXPECT_EQ(account_detail.lending_rates.value()[0].lending_rate_type, LendingRateType::FIXED);
-    EXPECT_STREQ(account_detail.lending_rates.value()[0].rate.c_str(), "string");
-    EXPECT_STREQ(account_detail.lending_rates.value()[0].comparison_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.lending_rates.value()[0].calculation_frequency->c_str(), "string");
-    EXPECT_STREQ(account_detail.lending_rates.value()[0].application_frequency->c_str(), "string");
-    EXPECT_EQ(account_detail.lending_rates.value()[0].interest_payment_due, InterestPaymentDue::IN_ARREARS);
-    EXPECT_EQ(account_detail.lending_rates.value()[0].tiers.value()[0].unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(account_detail.lending_rates.value()[0].tiers.value()[0].minimum_value, 0);
-    EXPECT_EQ(account_detail.lending_rates.value()[0].tiers.value()[0].minimum_value, 0);
-    EXPECT_STREQ(
-            account_detail.lending_rates.value()[0].tiers.value()[0].applicability_conditions->additional_info->c_str(),
-            "string");
-    EXPECT_STREQ(
-            account_detail.lending_rates.value()[0].tiers.value()[0].applicability_conditions->additional_info_uri->c_str(),
-            "string");
-    EXPECT_STREQ(account_detail.lending_rates.value()[0].tiers.value()[0].sub_tier->name.c_str(), "string");
-    EXPECT_EQ(account_detail.lending_rates.value()[0].tiers.value()[0].sub_tier->unit_of_measure,
-              UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(account_detail.lending_rates.value()[0].tiers.value()[0].sub_tier->minimum_value, 0);
-    EXPECT_EQ(account_detail.lending_rates.value()[0].tiers.value()[0].sub_tier->maximum_value, 0);
-    EXPECT_EQ(account_detail.lending_rates.value()[0].tiers.value()[0].sub_tier->rate_application_method,
-              RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(
-            account_detail.lending_rates.value()[0].tiers.value()[0].sub_tier->applicability_conditions->additional_info->c_str(),
-            "string");
-    EXPECT_STREQ(
-            account_detail.lending_rates.value()[0].tiers.value()[0].sub_tier->applicability_conditions->additional_info_uri->c_str(),
-            "string");
-    EXPECT_STREQ(account_detail.lending_rates.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(account_detail.lending_rates.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(account_detail.deposit_rates.value()[0].additional_info_uri->c_str(), "string");
-    EXPECT_EQ(account_detail.features.value()[0].feature_type, FeatureType::CARD_ACCESS);
-    EXPECT_STREQ(account_detail.features.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(account_detail.features.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(account_detail.features.value()[0].additional_info_uri->c_str(), "string");
-    EXPECT_EQ(account_detail.features.value()[0].is_activated, true);
-    EXPECT_STREQ(account_detail.fees.value()[0].name.c_str(), "string");
-    EXPECT_EQ(account_detail.fees.value()[0].fee_type, FeeType::PERIODIC);
-    EXPECT_STREQ(account_detail.fees.value()[0].amount->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].balance_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].transaction_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].accrued_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].accrual_frequency->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].currency->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].additional_info_uri->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].description.c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].description.c_str(), "string");
-    EXPECT_EQ(account_detail.fees.value()[0].discounts.value()[0].discount_type, DiscountType::BALANCE);
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].amount->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].balance_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].transaction_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].accrued_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].fee_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].additional_info_uri->c_str(), "string");
-    EXPECT_EQ(account_detail.fees.value()[0].discounts.value()[0].eligibility.value()[0].discount_eligibility_type,
-              DiscountEligibilityType::BUSINESS);
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].eligibility.value()[0].additional_value->c_str(),
-                 "string");
-    EXPECT_STREQ(account_detail.fees.value()[0].discounts.value()[0].eligibility.value()[0].additional_info->c_str(),
-                 "string");
-    EXPECT_STREQ(
-            account_detail.fees.value()[0].discounts.value()[0].eligibility.value()[0].additional_info_uri->c_str(),
-            "string");
-    EXPECT_EQ(account_detail.addresses.value()[0].address_u_type, AddressUType::SIMPLE);
-    EXPECT_STREQ(account_detail.addresses.value()[0].simple->mailing_name->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].simple->address_line1.c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].simple->address_line2->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].simple->address_line3->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].simple->postcode->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].simple->city.c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].simple->state.c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].simple->country->c_str(), "AUS");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->dpid->c_str(), "string");
-    EXPECT_EQ(account_detail.addresses.value()[0].paf->thoroughfare_number1, 0);
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->thoroughfare_number1_suffix->c_str(), "string");
-    EXPECT_EQ(account_detail.addresses.value()[0].paf->thoroughfare_number2, 0);
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->thoroughfare_number2_suffix->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->flat_unit_type->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->flat_unit_number->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->floor_level_type->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->floor_level_number->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->lot_number->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->building_name1->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->building_name2->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->street_name->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->street_type->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->street_suffix->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->postal_delivery_type->c_str(), "string");
-    EXPECT_EQ(account_detail.addresses.value()[0].paf->postal_delivery_number, 0);
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->postal_delivery_number_prefix->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->postal_delivery_number_suffix->c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->locality_name.c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->postcode.c_str(), "string");
-    EXPECT_STREQ(account_detail.addresses.value()[0].paf->state.c_str(), "string");
+    auto deposit_rate = account_detail.deposit_rates.value()[0];
+    EXPECT_EQ(deposit_rate.deposit_rate_type, DepositRateType::FIXED);
+    EXPECT_STREQ(deposit_rate.rate.c_str(), "string");
+    EXPECT_STREQ(deposit_rate.calculation_frequency->c_str(), "string");
+    EXPECT_STREQ(deposit_rate.application_frequency->c_str(), "string");
+    auto deposit_rate_tier = deposit_rate.tiers.value()[0];
+    EXPECT_STREQ(deposit_rate_tier.name.c_str(), "string");
+    EXPECT_EQ(deposit_rate_tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(deposit_rate_tier.minimum_value, 0);
+    EXPECT_EQ(deposit_rate_tier.minimum_value, 0);
+    EXPECT_STREQ(deposit_rate_tier.applicability_conditions->additional_info->c_str(), "string");
+    EXPECT_STREQ(deposit_rate_tier.applicability_conditions->additional_info_uri->c_str(), "string");
+    EXPECT_STREQ(deposit_rate_tier.sub_tier->name.c_str(), "string");
+    EXPECT_EQ(deposit_rate_tier.sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(deposit_rate_tier.sub_tier->minimum_value, 0);
+    EXPECT_EQ(deposit_rate_tier.sub_tier->maximum_value, 0);
+    EXPECT_EQ(deposit_rate_tier.sub_tier->rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(deposit_rate_tier.sub_tier->applicability_conditions->additional_info->c_str(), "string");
+    EXPECT_STREQ(deposit_rate_tier.sub_tier->applicability_conditions->additional_info_uri->c_str(), "string");
+    EXPECT_STREQ(deposit_rate.additional_value->c_str(), "string");
+    EXPECT_STREQ(deposit_rate.additional_info->c_str(), "string");
+    EXPECT_STREQ(deposit_rate.additional_info_uri->c_str(), "string");
+    auto lending_rate = account_detail.lending_rates.value()[0];
+    EXPECT_EQ(lending_rate.lending_rate_type, LendingRateType::FIXED);
+    EXPECT_STREQ(lending_rate.rate.c_str(), "string");
+    EXPECT_STREQ(lending_rate.comparison_rate->c_str(), "string");
+    EXPECT_STREQ(lending_rate.calculation_frequency->c_str(), "string");
+    EXPECT_STREQ(lending_rate.application_frequency->c_str(), "string");
+    EXPECT_EQ(lending_rate.interest_payment_due, InterestPaymentDue::IN_ARREARS);
+    auto lending_rate_tier = lending_rate.tiers.value()[0];
+    EXPECT_EQ(lending_rate_tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(lending_rate_tier.minimum_value, 0);
+    EXPECT_EQ(lending_rate_tier.minimum_value, 0);
+    EXPECT_STREQ(lending_rate_tier.applicability_conditions->additional_info->c_str(), "string");
+    EXPECT_STREQ(lending_rate_tier.applicability_conditions->additional_info_uri->c_str(), "string");
+    EXPECT_STREQ(lending_rate_tier.sub_tier->name.c_str(), "string");
+    EXPECT_EQ(lending_rate_tier.sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(lending_rate_tier.sub_tier->minimum_value, 0);
+    EXPECT_EQ(lending_rate_tier.sub_tier->maximum_value, 0);
+    EXPECT_EQ(lending_rate_tier.sub_tier->rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(lending_rate_tier.sub_tier->applicability_conditions->additional_info->c_str(), "string");
+    EXPECT_STREQ(lending_rate_tier.sub_tier->applicability_conditions->additional_info_uri->c_str(), "string");
+    EXPECT_STREQ(lending_rate.additional_value->c_str(), "string");
+    EXPECT_STREQ(lending_rate.additional_info->c_str(), "string");
+    EXPECT_STREQ(deposit_rate.additional_info_uri->c_str(), "string");
+    auto feature = account_detail.features.value()[0];
+    EXPECT_EQ(feature.feature_type, FeatureType::CARD_ACCESS);
+    EXPECT_STREQ(feature.additional_value->c_str(), "string");
+    EXPECT_STREQ(feature.additional_info->c_str(), "string");
+    EXPECT_STREQ(feature.additional_info_uri->c_str(), "string");
+    EXPECT_EQ(feature.is_activated, true);
+    auto fee = account_detail.fees.value()[0];
+    EXPECT_STREQ(fee.name.c_str(), "string");
+    EXPECT_EQ(fee.fee_type, FeeType::PERIODIC);
+    EXPECT_STREQ(fee.amount->c_str(), "string");
+    EXPECT_STREQ(fee.balance_rate->c_str(), "string");
+    EXPECT_STREQ(fee.transaction_rate->c_str(), "string");
+    EXPECT_STREQ(fee.accrued_rate->c_str(), "string");
+    EXPECT_STREQ(fee.accrual_frequency->c_str(), "string");
+    EXPECT_STREQ(fee.currency->c_str(), "string");
+    EXPECT_STREQ(fee.additional_value->c_str(), "string");
+    EXPECT_STREQ(fee.additional_info->c_str(), "string");
+    EXPECT_STREQ(fee.additional_info_uri->c_str(), "string");
+    auto fee_discount = fee.discounts.value()[0];
+    EXPECT_STREQ(fee_discount.description.c_str(), "string");
+    EXPECT_STREQ(fee_discount.description.c_str(), "string");
+    EXPECT_EQ(fee_discount.discount_type, DiscountType::BALANCE);
+    EXPECT_STREQ(fee_discount.amount->c_str(), "string");
+    EXPECT_STREQ(fee_discount.balance_rate->c_str(), "string");
+    EXPECT_STREQ(fee_discount.transaction_rate->c_str(), "string");
+    EXPECT_STREQ(fee_discount.accrued_rate->c_str(), "string");
+    EXPECT_STREQ(fee_discount.fee_rate->c_str(), "string");
+    EXPECT_STREQ(fee_discount.additional_value->c_str(), "string");
+    EXPECT_STREQ(fee_discount.additional_info->c_str(), "string");
+    EXPECT_STREQ(fee_discount.additional_info_uri->c_str(), "string");
+    auto fee_discount_eligibility = fee_discount.eligibility.value()[0];
+    EXPECT_EQ(fee_discount_eligibility.discount_eligibility_type, DiscountEligibilityType::BUSINESS);
+    EXPECT_STREQ(fee_discount_eligibility.additional_value->c_str(), "string");
+    EXPECT_STREQ(fee_discount_eligibility.additional_info->c_str(), "string");
+    EXPECT_STREQ(fee_discount_eligibility.additional_info_uri->c_str(), "string");
+    auto address = account_detail.addresses.value()[0];
+    EXPECT_EQ(address.address_u_type, AddressUType::SIMPLE);
+    EXPECT_STREQ(address.simple->mailing_name->c_str(), "string");
+    EXPECT_STREQ(address.simple->address_line1.c_str(), "string");
+    EXPECT_STREQ(address.simple->address_line2->c_str(), "string");
+    EXPECT_STREQ(address.simple->address_line3->c_str(), "string");
+    EXPECT_STREQ(address.simple->postcode->c_str(), "string");
+    EXPECT_STREQ(address.simple->city.c_str(), "string");
+    EXPECT_STREQ(address.simple->state.c_str(), "string");
+    EXPECT_STREQ(address.simple->country->c_str(), "AUS");
+    EXPECT_STREQ(address.paf->dpid->c_str(), "string");
+    EXPECT_EQ(address.paf->thoroughfare_number1, 0);
+    EXPECT_STREQ(address.paf->thoroughfare_number1_suffix->c_str(), "string");
+    EXPECT_EQ(address.paf->thoroughfare_number2, 0);
+    EXPECT_STREQ(address.paf->thoroughfare_number2_suffix->c_str(), "string");
+    EXPECT_STREQ(address.paf->flat_unit_type->c_str(), "string");
+    EXPECT_STREQ(address.paf->flat_unit_number->c_str(), "string");
+    EXPECT_STREQ(address.paf->floor_level_type->c_str(), "string");
+    EXPECT_STREQ(address.paf->floor_level_number->c_str(), "string");
+    EXPECT_STREQ(address.paf->lot_number->c_str(), "string");
+    EXPECT_STREQ(address.paf->building_name1->c_str(), "string");
+    EXPECT_STREQ(address.paf->building_name2->c_str(), "string");
+    EXPECT_STREQ(address.paf->street_name->c_str(), "string");
+    EXPECT_STREQ(address.paf->street_type->c_str(), "string");
+    EXPECT_STREQ(address.paf->street_suffix->c_str(), "string");
+    EXPECT_STREQ(address.paf->postal_delivery_type->c_str(), "string");
+    EXPECT_EQ(address.paf->postal_delivery_number, 0);
+    EXPECT_STREQ(address.paf->postal_delivery_number_prefix->c_str(), "string");
+    EXPECT_STREQ(address.paf->postal_delivery_number_suffix->c_str(), "string");
+    EXPECT_STREQ(address.paf->locality_name.c_str(), "string");
+    EXPECT_STREQ(address.paf->postcode.c_str(), "string");
+    EXPECT_STREQ(address.paf->state.c_str(), "string");
 }
 
 TEST(TypeDeserialization, BankingTermDepositAccount)
@@ -527,24 +513,25 @@ TEST(TypeDeserialization, BankingTransactionDetail)
     object = parser.parse(BANKING_TRANSACTION_DETAIL).extract<Poco::JSON::Object::Ptr>();
     BankingTransactionDetail transaction_detail;
     transaction_detail.deserialize(object);
-    EXPECT_STREQ(transaction_detail.transaction->account_id.c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->transaction_id->c_str(), "string");
-    EXPECT_EQ(transaction_detail.transaction->is_detail_available, true);
-    EXPECT_EQ(transaction_detail.transaction->type, TransactionType::FEE);
-    EXPECT_EQ(transaction_detail.transaction->status, TransactionStatus::PENDING);
-    EXPECT_STREQ(transaction_detail.transaction->description.c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->posting_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->value_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->execution_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->amount.c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->currency->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->reference.c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->merchant_name->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->merchant_category_code->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->biller_code->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->biller_name->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->crn->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.transaction->apca_number->c_str(), "string");
+    auto transaction = transaction_detail.transaction;
+    EXPECT_STREQ(transaction->account_id.c_str(), "string");
+    EXPECT_STREQ(transaction->transaction_id->c_str(), "string");
+    EXPECT_EQ(transaction->is_detail_available, true);
+    EXPECT_EQ(transaction->type, TransactionType::FEE);
+    EXPECT_EQ(transaction->status, TransactionStatus::PENDING);
+    EXPECT_STREQ(transaction->description.c_str(), "string");
+    EXPECT_STREQ(transaction->posting_date_time->c_str(), "string");
+    EXPECT_STREQ(transaction->value_date_time->c_str(), "string");
+    EXPECT_STREQ(transaction->execution_date_time->c_str(), "string");
+    EXPECT_STREQ(transaction->amount.c_str(), "string");
+    EXPECT_STREQ(transaction->currency->c_str(), "string");
+    EXPECT_STREQ(transaction->reference.c_str(), "string");
+    EXPECT_STREQ(transaction->merchant_name->c_str(), "string");
+    EXPECT_STREQ(transaction->merchant_category_code->c_str(), "string");
+    EXPECT_STREQ(transaction->biller_code->c_str(), "string");
+    EXPECT_STREQ(transaction->biller_name->c_str(), "string");
+    EXPECT_STREQ(transaction->crn->c_str(), "string");
+    EXPECT_STREQ(transaction->apca_number->c_str(), "string");
     EXPECT_STREQ(transaction_detail.extended_data.payer->c_str(), "string");
     EXPECT_STREQ(transaction_detail.extended_data.payee->c_str(), "string");
     EXPECT_EQ(transaction_detail.extended_data.extension_u_type, ExtensionUType::X2P101PAYLOAD);
@@ -602,28 +589,31 @@ TEST(TypeDeserialization, BankingPayeeDetail)
     EXPECT_STREQ(payee_detail.payee->creation_date->c_str(), "string");
     EXPECT_EQ(payee_detail.payee_u_type, PayeeUType::DOMESTIC);
     EXPECT_EQ(payee_detail.domestic->payee_account_u_type, PayeeAccountUType::ACCOUNT);
-    EXPECT_STREQ(payee_detail.domestic->account->account_name->c_str(), "string");
-    EXPECT_STREQ(payee_detail.domestic->account->bsb.c_str(), "string");
-    EXPECT_STREQ(payee_detail.domestic->account->account_number.c_str(), "string");
-    EXPECT_STREQ(payee_detail.domestic->card->card_number.c_str(), "string");
-    EXPECT_STREQ(payee_detail.domestic->pay_id->name->c_str(), "string");
-    EXPECT_STREQ(payee_detail.domestic->pay_id->identifier.c_str(), "string");
-    EXPECT_EQ(payee_detail.domestic->pay_id->type, PayIdType::EMAIL);
-    EXPECT_STREQ(payee_detail.biller->biller_code.c_str(), "string");
-    EXPECT_STREQ(payee_detail.biller->crn->c_str(), "string");
-    EXPECT_STREQ(payee_detail.biller->biller_name.c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->beneficiary_details.name->c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->beneficiary_details.country.c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->beneficiary_details.message->c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.country.c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.bank_address.name.c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.bank_address.address.c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.beneficiary_bank_bic->c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.fed_wire_number->c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.sort_code->c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.chip_number->c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.routing_number->c_str(), "string");
-    EXPECT_STREQ(payee_detail.international->bank_details.legal_entity_identifier->c_str(), "string");
+    auto domestic = payee_detail.domestic;
+    EXPECT_STREQ(domestic->account->account_name->c_str(), "string");
+    EXPECT_STREQ(domestic->account->bsb.c_str(), "string");
+    EXPECT_STREQ(domestic->account->account_number.c_str(), "string");
+    EXPECT_STREQ(domestic->card->card_number.c_str(), "string");
+    EXPECT_STREQ(domestic->pay_id->name->c_str(), "string");
+    EXPECT_STREQ(domestic->pay_id->identifier.c_str(), "string");
+    EXPECT_EQ(domestic->pay_id->type, PayIdType::EMAIL);
+    auto biller = payee_detail.biller;
+    EXPECT_STREQ(biller->biller_code.c_str(), "string");
+    EXPECT_STREQ(biller->crn->c_str(), "string");
+    EXPECT_STREQ(biller->biller_name.c_str(), "string");
+    auto international = payee_detail.international;
+    EXPECT_STREQ(international->beneficiary_details.name->c_str(), "string");
+    EXPECT_STREQ(international->beneficiary_details.country.c_str(), "string");
+    EXPECT_STREQ(international->beneficiary_details.message->c_str(), "string");
+    EXPECT_STREQ(international->bank_details.country.c_str(), "string");
+    EXPECT_STREQ(international->bank_details.bank_address.name.c_str(), "string");
+    EXPECT_STREQ(international->bank_details.bank_address.address.c_str(), "string");
+    EXPECT_STREQ(international->bank_details.beneficiary_bank_bic->c_str(), "string");
+    EXPECT_STREQ(international->bank_details.fed_wire_number->c_str(), "string");
+    EXPECT_STREQ(international->bank_details.sort_code->c_str(), "string");
+    EXPECT_STREQ(international->bank_details.chip_number->c_str(), "string");
+    EXPECT_STREQ(international->bank_details.routing_number->c_str(), "string");
+    EXPECT_STREQ(international->bank_details.legal_entity_identifier->c_str(), "string");
 }
 
 TEST(TypeDeserialization, BankingDomesticPayee)
@@ -738,39 +728,37 @@ TEST(TypeDeserialization, BankingScheduledPayment)
     EXPECT_STREQ(scheduled_payment.payee_reference.c_str(), "string");
     EXPECT_EQ(scheduled_payment.status, ScheduledPaymentStatus::ACTIVE);
     EXPECT_STREQ(scheduled_payment.from.account_id.c_str(), "string");
-    EXPECT_EQ(scheduled_payment.payment_set[0].to.to_u_type, ToUType::ACCOUNT_ID);
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.account_id->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.payee_id->c_str(), "string");
-    EXPECT_EQ(scheduled_payment.payment_set[0].to.domestic->payee_account_u_type, PayeeAccountUType::ACCOUNT);
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.domestic->account->account_name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.domestic->account->bsb.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.domestic->account->account_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.domestic->card->card_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.domestic->pay_id->name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.domestic->pay_id->identifier.c_str(), "string");
-    EXPECT_EQ(scheduled_payment.payment_set[0].to.domestic->pay_id->type, PayIdType::EMAIL);
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.biller->biller_code.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.biller->crn->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.biller->biller_name.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->beneficiary_details.name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->beneficiary_details.country.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->beneficiary_details.message->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.country.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.account_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.bank_address.name.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.bank_address.address.c_str(),
-                 "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.beneficiary_bank_bic->c_str(),
-                 "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.fed_wire_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.sort_code->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.chip_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.routing_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].to.international->bank_details.legal_entity_identifier->c_str(),
-                 "string");
-    EXPECT_EQ(scheduled_payment.payment_set[0].is_amount_calculated, true);
-    EXPECT_STREQ(scheduled_payment.payment_set[0].amount->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payment_set[0].currency->c_str(), "string");
+    auto payment = scheduled_payment.payment_set[0];
+    EXPECT_EQ(payment.to.to_u_type, ToUType::ACCOUNT_ID);
+    EXPECT_STREQ(payment.to.account_id->c_str(), "string");
+    EXPECT_STREQ(payment.to.payee_id->c_str(), "string");
+    EXPECT_EQ(payment.to.domestic->payee_account_u_type, PayeeAccountUType::ACCOUNT);
+    EXPECT_STREQ(payment.to.domestic->account->account_name->c_str(), "string");
+    EXPECT_STREQ(payment.to.domestic->account->bsb.c_str(), "string");
+    EXPECT_STREQ(payment.to.domestic->account->account_number.c_str(), "string");
+    EXPECT_STREQ(payment.to.domestic->card->card_number.c_str(), "string");
+    EXPECT_STREQ(payment.to.domestic->pay_id->name->c_str(), "string");
+    EXPECT_STREQ(payment.to.domestic->pay_id->identifier.c_str(), "string");
+    EXPECT_EQ(payment.to.domestic->pay_id->type, PayIdType::EMAIL);
+    EXPECT_STREQ(payment.to.biller->biller_code.c_str(), "string");
+    EXPECT_STREQ(payment.to.biller->crn->c_str(), "string");
+    EXPECT_STREQ(payment.to.biller->biller_name.c_str(), "string");
+    EXPECT_STREQ(payment.to.international->beneficiary_details.name->c_str(), "string");
+    EXPECT_STREQ(payment.to.international->beneficiary_details.country.c_str(), "string");
+    EXPECT_STREQ(payment.to.international->beneficiary_details.message->c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.country.c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.account_number.c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.bank_address.name.c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.bank_address.address.c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.beneficiary_bank_bic->c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.fed_wire_number->c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.sort_code->c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.chip_number->c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.routing_number->c_str(), "string");
+    EXPECT_STREQ(payment.to.international->bank_details.legal_entity_identifier->c_str(), "string");
+    EXPECT_EQ(payment.is_amount_calculated, true);
+    EXPECT_STREQ(payment.amount->c_str(), "string");
+    EXPECT_STREQ(payment.currency->c_str(), "string");
     EXPECT_STREQ(scheduled_payment.recurrence.next_payment_date->c_str(), "string");
     EXPECT_EQ(scheduled_payment.recurrence.recurrence_u_type, RecurrenceUType::ONCE_OFF);
     EXPECT_STREQ(scheduled_payment.recurrence.once_off->payment_date.c_str(), "string");
@@ -936,17 +924,164 @@ TEST(TypeDeserialization, BankingScheduledPaymentRecurrenceEventBased)
     EXPECT_STREQ(scheduled_payment_recurrence_event_based.description.c_str(), "string");
 }
 
+TEST(RequestDeserialization, AccountIds)
+{
+    object = parser.parse(REQUEST_BANKING_ACCOUNT_IDS).extract<Poco::JSON::Object::Ptr>();
+    RequestAccountIds request;
+    request.deserialize(object);
+    auto account_ids = static_cast<AccountIds *>(request.data.get())->ids;
+    EXPECT_EQ(account_ids.size(), 1);
+    EXPECT_STREQ(account_ids[0].c_str(), "string");
+}
+
 TEST(ResponseDeserialization, BankingProductList)
 {
-
+    object = parser.parse(RESPONSE_BANKING_PRODUCT_LIST).extract<Poco::JSON::Object::Ptr>();
+    ResponseBankingProductList response;
+    response.deserialize(object);
+    auto products = static_cast<BankingProductList *>(response.data.get())->products;
+    auto *links = static_cast<LinksPaginated *>(response.links.get());
+    auto *meta = static_cast<MetaPaginated *>(response.meta.value().get());
+    auto product = products[0];
+    EXPECT_STREQ(product.product_id.c_str(), "string");
+    EXPECT_STREQ(product.effective_from.value().c_str(), "string");
+    EXPECT_STREQ(product.effective_to.value().c_str(), "string");
+    EXPECT_STREQ(product.last_updated.c_str(), "string");
+    EXPECT_EQ(product.product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
+    EXPECT_STREQ(product.name.c_str(), "string");
+    EXPECT_STREQ(product.description.c_str(), "string");
+    EXPECT_STREQ(product.brand.c_str(), "string");
+    EXPECT_STREQ(product.brand_name.value().c_str(), "string");
+    EXPECT_STREQ(product.application_uri.value().c_str(), "string");
+    EXPECT_TRUE(product.is_tailored);
+    auto additional_information = product.additional_information;
+    EXPECT_STREQ(additional_information->overview_uri.value().c_str(), "string");
+    EXPECT_STREQ(additional_information->terms_uri.value().c_str(), "string");
+    EXPECT_STREQ(additional_information->eligibility_uri.value().c_str(), "string");
+    EXPECT_STREQ(additional_information->fees_and_pricing_uri.value().c_str(), "string");
+    EXPECT_STREQ(additional_information->bundle_uri.value().c_str(), "string");
+    EXPECT_STREQ(product.card_art.value()[0].title->c_str(), "string");
+    EXPECT_STREQ(product.card_art.value()[0].image_uri.c_str(), "string");
+    EXPECT_STREQ(links->self.c_str(), "string");
+    EXPECT_STREQ(links->first.value().c_str(), "string");
+    EXPECT_STREQ(links->previous.value().c_str(), "string");
+    EXPECT_STREQ(links->next.value().c_str(), "string");
+    EXPECT_STREQ(links->last.value().c_str(), "string");
+    EXPECT_EQ(meta->total_records, 0);
+    EXPECT_EQ(meta->total_pages, 0);
 }
 
 TEST(ResponseDeserialization, BankingProductById)
 {
+    object = parser.parse(RESPONSE_BANKING_PRODUCT_BY_ID).extract<Poco::JSON::Object::Ptr>();
+    ResponseBankingProductById response;
+    response.deserialize(object);
+    auto product_detail = static_cast<BankingProductById *>(response.data.get())->product_detail;
+    auto *links = static_cast<Links *>(response.links.get());
+    auto product = product_detail.product;
+    EXPECT_STREQ(product->product_id.c_str(), "string");
+    EXPECT_STREQ(product->effective_from->c_str(), "string");
+    EXPECT_STREQ(product->effective_to->c_str(), "string");
+    EXPECT_STREQ(product->last_updated.c_str(), "string");
+    EXPECT_EQ(product->product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
+    EXPECT_STREQ(product->name.c_str(), "string");
+    EXPECT_STREQ(product->description.c_str(), "string");
+    EXPECT_STREQ(product->brand.c_str(), "string");
+    EXPECT_STREQ(product->brand_name->c_str(), "string");
+    EXPECT_STREQ(product->application_uri->c_str(), "string");
+    EXPECT_TRUE(product->is_tailored);
+    auto additional_information = product->additional_information;
+    EXPECT_STREQ(additional_information->overview_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->terms_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->eligibility_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->fees_and_pricing_uri->c_str(), "string");
+    EXPECT_STREQ(additional_information->bundle_uri->c_str(), "string");
+    EXPECT_EQ(product->card_art.value().size(), 1);
+    auto card_art = product->card_art.value()[0];
+    EXPECT_STREQ(card_art.title->c_str(), "string");
+    EXPECT_STREQ(card_art.image_uri.c_str(), "string");
+    EXPECT_EQ(product_detail.bundles.value().size(), 1);
+    auto bundle = product_detail.bundles.value()[0];
+    EXPECT_STREQ(bundle.name.c_str(), "string");
+    EXPECT_STREQ(bundle.description.c_str(), "string");
+    EXPECT_STREQ(bundle.additional_info->c_str(), "string");
+    EXPECT_STREQ(bundle.additional_info_uri->c_str(), "string");
+    EXPECT_EQ(bundle.product_ids.value().size(), 1);
+    EXPECT_STREQ(bundle.product_ids.value()[0].c_str(), "string");
+    EXPECT_EQ(product_detail.features.value().size(), 1);
+    auto feature = product_detail.features.value()[0];
+    EXPECT_EQ(feature.feature_type, FeatureType::CARD_ACCESS);
+    EXPECT_STREQ(feature.additional_value.value().c_str(), "string");
+    EXPECT_STREQ(feature.additional_info.value().c_str(), "string");
+    EXPECT_STREQ(feature.additional_info_uri.value().c_str(), "string");
+    EXPECT_EQ(product_detail.constraints.value().size(), 1);
+    auto constraint = product_detail.constraints.value()[0];
+    EXPECT_EQ(constraint.constraint_type, ConstraintType::MIN_BALANCE);
+    EXPECT_STREQ(constraint.additional_value.value().c_str(), "string");
+    EXPECT_STREQ(constraint.additional_info.value().c_str(), "string");
+    EXPECT_STREQ(constraint.additional_info_uri.value().c_str(), "string");
+    EXPECT_EQ(product_detail.fees.value().size(), 1);
+    auto fee = product_detail.fees.value()[0];
+    EXPECT_STREQ(fee.name.c_str(), "string");
+    EXPECT_EQ(fee.fee_type, FeeType::PERIODIC);
+    EXPECT_STREQ(fee.amount.value().c_str(), "string");
+    EXPECT_STREQ(fee.balance_rate.value().c_str(), "string");
+    EXPECT_STREQ(fee.transaction_rate.value().c_str(), "string");
+    EXPECT_STREQ(fee.accrued_rate.value().c_str(), "string");
+    EXPECT_STREQ(fee.accrual_frequency.value().c_str(), "string");
+    EXPECT_STREQ(fee.currency.value().c_str(), "string");
+    EXPECT_STREQ(fee.additional_value.value().c_str(), "string");
+    EXPECT_STREQ(fee.additional_info.value().c_str(), "string");
+    EXPECT_STREQ(fee.additional_info_uri.value().c_str(), "string");
+    EXPECT_EQ(fee.discounts.value().size(), 1);
+    auto discount = fee.discounts.value()[0];
+    EXPECT_STREQ(discount.description.c_str(), "string");
+    EXPECT_EQ(discount.discount_type, DiscountType::BALANCE);
+    EXPECT_STREQ(discount.amount.value().c_str(), "string");
+    EXPECT_STREQ(discount.balance_rate.value().c_str(), "string");
+    EXPECT_STREQ(discount.transaction_rate.value().c_str(), "string");
+    EXPECT_STREQ(discount.accrued_rate.value().c_str(), "string");
+    EXPECT_STREQ(discount.fee_rate.value().c_str(), "string");
+    EXPECT_STREQ(discount.additional_value.value().c_str(), "string");
+    EXPECT_STREQ(discount.additional_info.value().c_str(), "string");
+    EXPECT_STREQ(discount.additional_info_uri.value().c_str(), "string");
+    EXPECT_EQ(discount.eligibility.value().size(), 1);
+    auto eligibility = discount.eligibility.value()[0];
+    EXPECT_EQ(eligibility.discount_eligibility_type, DiscountEligibilityType::BUSINESS);
+    EXPECT_STREQ(eligibility.additional_value.value().c_str(), "string");
+    EXPECT_STREQ(eligibility.additional_info.value().c_str(), "string");
+    EXPECT_STREQ(eligibility.additional_info_uri.value().c_str(), "string");
+    EXPECT_EQ(product_detail.deposit_rates.value().size(), 1);
+    auto deposit_rate = product_detail.deposit_rates.value()[0];
+    EXPECT_EQ(deposit_rate.deposit_rate_type, DepositRateType::FIXED);
+    EXPECT_STREQ(deposit_rate.rate.c_str(), "string");
+    EXPECT_STREQ(deposit_rate.calculation_frequency.value().c_str(), "string");
+    EXPECT_STREQ(deposit_rate.application_frequency.value().c_str(), "string");
+    EXPECT_EQ(deposit_rate.tiers.value().size(), 1);
+    auto tier = deposit_rate.tiers.value()[0];
+    EXPECT_STREQ(tier.name.c_str(), "string");
+    EXPECT_EQ(tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(tier.minimum_value, 0);
+    EXPECT_EQ(tier.maximum_value, 0);
+    EXPECT_EQ(tier.rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(tier.applicability_conditions.value().additional_info.value().c_str(), "string");
+    EXPECT_STREQ(tier.applicability_conditions.value().additional_info_uri.value().c_str(), "string");
+    auto sub_tier = tier.sub_tier.value();
+    EXPECT_STREQ(sub_tier.name.c_str(), "string");
+    EXPECT_EQ(sub_tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(sub_tier.minimum_value, 0);
+    EXPECT_EQ(sub_tier.maximum_value, 0);
+    EXPECT_EQ(sub_tier.rate_application_method.value(), RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(sub_tier.applicability_conditions.value().additional_info.value().c_str(), "string");
+    EXPECT_STREQ(sub_tier.applicability_conditions.value().additional_info_uri.value().c_str(), "string");
+    EXPECT_STREQ(deposit_rate.additional_value.value().c_str(), "string");
+    EXPECT_STREQ(deposit_rate.additional_info.value().c_str(), "string");
+    EXPECT_STREQ(deposit_rate.additional_info_uri.value().c_str(), "string");
 }
 
 TEST(ResponseDeserialization, BankingAccountList)
 {
+    object = parser.parse(BANKING_SCHEDULED_PAYMENT_RECURRENCE_EVENT_BASED).extract<Poco::JSON::Object::Ptr>();
 }
 
 TEST(ResponseDeserialization, BankingAccountById)

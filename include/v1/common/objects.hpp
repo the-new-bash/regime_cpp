@@ -5,7 +5,7 @@
 
 struct Object
 {
-    std::string serialize() const;
+    [[nodiscard]] std::string serialize() const;
 
     virtual void deserialize(const Poco::JSON::Object::Ptr &payload) = 0;
 
@@ -28,7 +28,7 @@ struct Links : public Object
 
     void deserialize(const Poco::JSON::Object::Ptr &payload) override;
 
-    virtual Poco::JSON::Object::Ptr to_json() const override;
+    [[nodiscard]] virtual Poco::JSON::Object::Ptr to_json() const override;
 
     std::string self;
 };
@@ -40,7 +40,7 @@ struct LinksPaginated : public Links
 
     void deserialize(const Poco::JSON::Object::Ptr &payload) override;
 
-    virtual Poco::JSON::Object::Ptr to_json() const override;
+    [[nodiscard]] virtual Poco::JSON::Object::Ptr to_json() const override;
 
     std::optional<std::string> first;
     std::optional<std::string> previous;
@@ -54,7 +54,7 @@ struct MetaPaginated : public Meta
 
     void deserialize(const Poco::JSON::Object::Ptr &payload) override;
 
-    virtual Poco::JSON::Object::Ptr to_json() const override;
+    [[nodiscard]] virtual Poco::JSON::Object::Ptr to_json() const override;
 
     unsigned int total_records;
     unsigned int total_pages;

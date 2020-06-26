@@ -151,7 +151,7 @@ RegimeClient::get_balances_for_specific_accounts(Bank bank, const std::vector<st
     URI uri(get_uri(bank, "accounts/balances"));
     Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
     RequestAccountIds body;
-    static_cast<AccountIds *>(body.data.get())->account_ids = account_ids;
+    static_cast<AccountIds *>(body.data.get())->ids = account_ids;
     auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
     std::vector<BankingBalance> result;
@@ -507,7 +507,7 @@ RegimeClient::get_direct_debits_for_specific_accounts(Bank bank, const std::vect
     URI uri(get_uri(bank, "accounts/direct-debits"));
     Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
     RequestAccountIds body;
-    static_cast<AccountIds *>(body.data.get())->account_ids = account_ids;
+    static_cast<AccountIds *>(body.data.get())->ids = account_ids;
     auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
     std::vector<BankingDirectDebit> result;
@@ -675,7 +675,7 @@ RegimeClient::get_scheduled_payments_for_specific_accounts(Bank bank, const std:
     URI uri(get_uri(bank, "payments/scheduled"));
     Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
     RequestAccountIds body;
-    static_cast<AccountIds *>(body.data.get())->account_ids = account_ids;
+    static_cast<AccountIds *>(body.data.get())->ids = account_ids;
     auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
     std::vector<BankingScheduledPayment> result;

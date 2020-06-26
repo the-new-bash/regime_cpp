@@ -13,18 +13,18 @@ void RequestAccountIds::deserialize(const Poco::JSON::Object::Ptr &payload)
 Poco::JSON::Object::Ptr RequestAccountIds::to_json() const
 {
     Poco::JSON::Object::Ptr json;
-    regime::util::add(json, "accountIds", static_cast<AccountIds *>(data.get())->account_ids);
+    regime::util::add(json, "accountIds", static_cast<AccountIds *>(data.get())->ids);
     return json;
 }
 
 void AccountIds::deserialize(const Poco::JSON::Object::Ptr &payload)
 {
-    regime::util::get(account_ids, payload, "accountIds");
+    regime::util::get(ids, payload, "accountIds");
 }
 
 Poco::JSON::Object::Ptr AccountIds::to_json() const
 {
     Poco::JSON::Object::Ptr json;
-    regime::util::add(json, "accountIds", account_ids);
+    regime::util::add(json, "accountIds", ids);
     return json;
 }

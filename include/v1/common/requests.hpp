@@ -7,8 +7,6 @@
 #define DECLARE_REQUEST_DATA(type_name, ...) \
         struct type_name : public Data \
         { \
-            type_name() = default; \
-            ~type_name() = default; \
             void deserialize(const Poco::JSON::Object::Ptr &payload) override; \
             Poco::JSON::Object::Ptr to_json() const override; \
             __VA_ARGS__ \
