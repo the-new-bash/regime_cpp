@@ -10,11 +10,8 @@
 static Poco::JSON::Parser parser;
 static Poco::JSON::Object::Ptr object;
 
-TEST(TypeDeserialization, BankingProductV2)
+void cmp_product_v2_fields(const BankingProductV2 &product)
 {
-    object = parser.parse(BANKING_PRODUCT_V2).extract<Poco::JSON::Object::Ptr>();
-    BankingProductV2 product;
-    product.deserialize(object);
     EXPECT_STREQ(product.product_id.c_str(), "string");
     EXPECT_STREQ(product.effective_from->c_str(), "string");
     EXPECT_STREQ(product.effective_to->c_str(), "string");
@@ -35,32 +32,56 @@ TEST(TypeDeserialization, BankingProductV2)
     EXPECT_STREQ(product.card_art.value()[0].image_uri.c_str(), "string");
 }
 
+void cmp_product_bundle_fields(const BankingProductBundle &bundle)
+{
+    EXPECT_STREQ(bundle.name.c_str(), "string");
+    EXPECT_STREQ(bundle.description.c_str(), "string");
+    EXPECT_STREQ(bundle.additional_info->c_str(), "string");
+    EXPECT_STREQ(bundle.additional_info_uri->c_str(), "string");
+    EXPECT_STREQ(bundle.product_ids.value()[0].c_str(), "string");
+}
+
+void cmp_product_feature_fields(const BankingProductFeature &feature)
+{
+    EXPECT_EQ(feature.feature_type, FeatureType::CARD_ACCESS);
+    EXPECT_STREQ(feature.additional_value->c_str(), "string");
+    EXPECT_STREQ(feature.additional_info->c_str(), "string");
+    EXPECT_STREQ(feature.additional_info_uri->c_str(), "string");
+}
+
+void cmp_product_constraint_fields(const BankingProductConstraint &constraint)
+{
+    EXPECT_EQ(constraint.constraint_type, ConstraintType::MIN_BALANCE);
+    EXPECT_STREQ(constraint.additional_value->c_str(), "string");
+    EXPECT_STREQ(constraint.additional_info->c_str(), "string");
+    EXPECT_STREQ(constraint.additional_info_uri->c_str(), "string");
+}
+
+void cmp_product_detail_fields(const BankingProductDetail &detail)
+{
+    cmp_product_v2_fields(detail.product.value());
+    EXPECT_EQ(detail.bundles.value().size(), 1);
+    cmp_product_bundle_fields(detail.bundles.value()[0]);
+    EXPECT_EQ(detail.features.value().size(), 1);
+    cmp_product_feature_fields(detail.features.value()[0]);
+    EXPECT_EQ(detail.constraints.value().size(), 1);
+    cmp_product_constraint_fields(detail.constraints.value()[0]);
+}
+
+TEST(TypeDeserialization, BankingProductV2)
+{
+    object = parser.parse(BANKING_PRODUCT_V2).extract<Poco::JSON::Object::Ptr>();
+    BankingProductV2 product;
+    product.deserialize(object);
+    cmp_product_v2_fields(product);
+}
+
 TEST(TypeDeserialization, BankingProductDetail)
 {
     object = parser.parse(BANKING_PRODUCT_DETAIL).extract<Poco::JSON::Object::Ptr>();
     BankingProductDetail product_detail;
     product_detail.deserialize(object);
-    auto product = product_detail.product;
-    EXPECT_STREQ(product->product_id.c_str(), "string");
-    EXPECT_STREQ(product->effective_from->c_str(), "string");
-    EXPECT_STREQ(product->effective_to->c_str(), "string");
-    EXPECT_STREQ(product->last_updated.c_str(), "string");
-    EXPECT_EQ(product->product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
-    EXPECT_STREQ(product->name.c_str(), "string");
-    EXPECT_STREQ(product->description.c_str(), "string");
-    EXPECT_STREQ(product->brand.c_str(), "string");
-    EXPECT_STREQ(product->brand_name->c_str(), "string");
-    EXPECT_STREQ(product->application_uri->c_str(), "string");
-    EXPECT_EQ(product->is_tailored, true);
-    auto additional_information = product->additional_information;
-    EXPECT_STREQ(additional_information->overview_uri->c_str(), "string");
-    EXPECT_STREQ(additional_information->terms_uri->c_str(), "string");
-    EXPECT_STREQ(additional_information->eligibility_uri->c_str(), "string");
-    EXPECT_STREQ(additional_information->fees_and_pricing_uri->c_str(), "string");
-    EXPECT_STREQ(additional_information->bundle_uri->c_str(), "string");
-    EXPECT_STREQ(product->card_art.value()[0].title->c_str(), "string");
-    EXPECT_STREQ(product->card_art.value()[0].image_uri.c_str(), "string");
-    EXPECT_STREQ(product_detail.bundles.value()[0].name.c_str(), "string");
+    cmp_product_detail_fields(product_detail);
 }
 
 TEST(TypeDeserialization, BankingProductBundle)
@@ -68,11 +89,7 @@ TEST(TypeDeserialization, BankingProductBundle)
     object = parser.parse(BANKING_PRODUCT_BUNDLE).extract<Poco::JSON::Object::Ptr>();
     BankingProductBundle product_bundle;
     product_bundle.deserialize(object);
-    EXPECT_STREQ(product_bundle.name.c_str(), "string");
-    EXPECT_STREQ(product_bundle.description.c_str(), "string");
-    EXPECT_STREQ(product_bundle.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_bundle.additional_info_uri->c_str(), "string");
-    EXPECT_STREQ(product_bundle.product_ids.value()[0].c_str(), "string");
+    cmp_product_bundle_fields(product_bundle);
 }
 
 TEST(TypeDeserialization, BankingProductFeature)
@@ -80,10 +97,7 @@ TEST(TypeDeserialization, BankingProductFeature)
     object = parser.parse(BANKING_PRODUCT_FEATURE).extract<Poco::JSON::Object::Ptr>();
     BankingProductFeature product_feature;
     product_feature.deserialize(object);
-    EXPECT_EQ(product_feature.feature_type, FeatureType::CARD_ACCESS);
-    EXPECT_STREQ(product_feature.additional_value->c_str(), "string");
-    EXPECT_STREQ(product_feature.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_feature.additional_info_uri->c_str(), "string");
+    cmp_product_feature_fields(product_feature);
 }
 
 TEST(TypeDeserialization, BankingProductConstraint)
@@ -91,10 +105,7 @@ TEST(TypeDeserialization, BankingProductConstraint)
     object = parser.parse(BANKING_PRODUCT_CONSTRAINT).extract<Poco::JSON::Object::Ptr>();
     BankingProductConstraint product_constraint;
     product_constraint.deserialize(object);
-    EXPECT_EQ(product_constraint.constraint_type, ConstraintType::MIN_BALANCE);
-    EXPECT_STREQ(product_constraint.additional_value->c_str(), "string");
-    EXPECT_STREQ(product_constraint.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_constraint.additional_info_uri->c_str(), "string");
+    cmp_product_constraint_fields(product_constraint);
 }
 
 TEST(TypeDeserialization, BankingProductEligibility)
@@ -1077,11 +1088,63 @@ TEST(ResponseDeserialization, BankingProductById)
     EXPECT_STREQ(deposit_rate.additional_value.value().c_str(), "string");
     EXPECT_STREQ(deposit_rate.additional_info.value().c_str(), "string");
     EXPECT_STREQ(deposit_rate.additional_info_uri.value().c_str(), "string");
+    EXPECT_EQ(product_detail.lending_rates.value().size(), 1);
+    auto lending_rate = product_detail.lending_rates.value()[0];
+    EXPECT_EQ(lending_rate.lending_rate_type, LendingRateType::FIXED);
+    EXPECT_STREQ(lending_rate.rate.c_str(), "string");
+    EXPECT_STREQ(lending_rate.comparison_rate.value().c_str(), "string");
+    EXPECT_STREQ(lending_rate.calculation_frequency.value().c_str(), "string");
+    EXPECT_STREQ(lending_rate.application_frequency.value().c_str(), "string");
+    EXPECT_EQ(lending_rate.interest_payment_due.value(), InterestPaymentDue::IN_ARREARS);
+    EXPECT_EQ(lending_rate.tiers.value().size(), 1);
+    auto lr_tier = lending_rate.tiers.value()[0];
+    EXPECT_STREQ(lr_tier.name.c_str(), "string");
+    EXPECT_EQ(lr_tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(lr_tier.minimum_value, 0);
+    EXPECT_EQ(lr_tier.maximum_value, 0);
+    EXPECT_EQ(lr_tier.rate_application_method.value(), RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(lr_tier.applicability_conditions.value().additional_info.value().c_str(), "string");
+    EXPECT_STREQ(lr_tier.applicability_conditions.value().additional_info_uri.value().c_str(), "string");
+    auto lr_sub_tier = lr_tier.sub_tier.value();
+    EXPECT_STREQ(lr_sub_tier.name.c_str(), "string");
+    EXPECT_EQ(lr_sub_tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(lr_sub_tier.minimum_value, 0);
+    EXPECT_EQ(lr_sub_tier.maximum_value, 0);
+    EXPECT_EQ(lr_sub_tier.rate_application_method.value(), RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_STREQ(lr_sub_tier.applicability_conditions.value().additional_info.value().c_str(), "string");
+    EXPECT_STREQ(lr_sub_tier.applicability_conditions.value().additional_info_uri.value().c_str(), "string");
+    EXPECT_STREQ(lending_rate.additional_value.value().c_str(), "string");
+    EXPECT_STREQ(lending_rate.additional_info.value().c_str(), "string");
+    EXPECT_STREQ(lending_rate.additional_info_uri.value().c_str(), "string");
+    EXPECT_STREQ(links->self.c_str(), "string");
 }
 
 TEST(ResponseDeserialization, BankingAccountList)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_RECURRENCE_EVENT_BASED).extract<Poco::JSON::Object::Ptr>();
+    object = parser.parse(RESPONSE_BANKING_ACCOUNT_LIST).extract<Poco::JSON::Object::Ptr>();
+    ResponseBankingAccountList response;
+    response.deserialize(object);
+    auto accounts = static_cast<BankingAccountList *>(response.data.get())->accounts;
+    auto *links = static_cast<LinksPaginated *>(response.links.get());
+    auto *meta = static_cast<MetaPaginated *>(response.meta.value().get());
+    EXPECT_EQ(accounts.size(), 1);
+    auto account = accounts[0];
+    EXPECT_STREQ(account.account_id.c_str(), "string");
+    EXPECT_STREQ(account.creation_date.value().c_str(), "string");
+    EXPECT_STREQ(account.display_name.c_str(), "string");
+    EXPECT_STREQ(account.nickname.value().c_str(), "string");
+    EXPECT_EQ(account.open_status.value(), OpenStatus::OPEN);
+    EXPECT_TRUE(account.is_owned.value());
+    EXPECT_STREQ(account.masked_number.c_str(), "string");
+    EXPECT_EQ(account.product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
+    EXPECT_STREQ(account.product_name.c_str(), "string");
+    EXPECT_STREQ(links->self.c_str(), "string");
+    EXPECT_STREQ(links->first.value().c_str(), "string");
+    EXPECT_STREQ(links->previous.value().c_str(), "string");
+    EXPECT_STREQ(links->next.value().c_str(), "string");
+    EXPECT_STREQ(links->last.value().c_str(), "string");
+    EXPECT_EQ(meta->total_records, 0);
+    EXPECT_EQ(meta->total_pages, 0);
 }
 
 TEST(ResponseDeserialization, BankingAccountById)
