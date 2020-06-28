@@ -10,13 +10,15 @@
 static Poco::JSON::Parser parser;
 static Poco::JSON::Object::Ptr object;
 
-void cmp_product_v2_fields(const BankingProductV2 &product)
+#define EXTRACT_OBJECT(obj, str) obj = parser.parse(str).extract<Poco::JSON::Object::Ptr>()
+
+void test_product_v2_fields(const BankingProductV2 &product)
 {
     EXPECT_STREQ(product.product_id.c_str(), "string");
     EXPECT_STREQ(product.effective_from->c_str(), "string");
     EXPECT_STREQ(product.effective_to->c_str(), "string");
     EXPECT_STREQ(product.last_updated.c_str(), "string");
-    EXPECT_EQ(product.product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
+    EXPECT_EQ(product.product_category, static_cast<ProductCategory>(0));
     EXPECT_STREQ(product.name.c_str(), "string");
     EXPECT_STREQ(product.description.c_str(), "string");
     EXPECT_STREQ(product.brand_name->c_str(), "string");
@@ -32,7 +34,7 @@ void cmp_product_v2_fields(const BankingProductV2 &product)
     EXPECT_STREQ(product.card_art.value()[0].image_uri.c_str(), "string");
 }
 
-void cmp_product_bundle_fields(const BankingProductBundle &bundle)
+void test_product_bundle_fields(const BankingProductBundle &bundle)
 {
     EXPECT_STREQ(bundle.name.c_str(), "string");
     EXPECT_STREQ(bundle.description.c_str(), "string");
@@ -41,104 +43,43 @@ void cmp_product_bundle_fields(const BankingProductBundle &bundle)
     EXPECT_STREQ(bundle.product_ids.value()[0].c_str(), "string");
 }
 
-void cmp_product_feature_fields(const BankingProductFeature &feature)
+void test_product_feature_fields(const BankingProductFeature &feature)
 {
-    EXPECT_EQ(feature.feature_type, FeatureType::CARD_ACCESS);
+    EXPECT_EQ(feature.feature_type, static_cast<FeatureType>(0));
     EXPECT_STREQ(feature.additional_value->c_str(), "string");
     EXPECT_STREQ(feature.additional_info->c_str(), "string");
     EXPECT_STREQ(feature.additional_info_uri->c_str(), "string");
 }
 
-void cmp_product_constraint_fields(const BankingProductConstraint &constraint)
+void test_product_constraint_fields(const BankingProductConstraint &constraint)
 {
-    EXPECT_EQ(constraint.constraint_type, ConstraintType::MIN_BALANCE);
+    EXPECT_EQ(constraint.constraint_type, static_cast<ConstraintType>(0));
     EXPECT_STREQ(constraint.additional_value->c_str(), "string");
     EXPECT_STREQ(constraint.additional_info->c_str(), "string");
     EXPECT_STREQ(constraint.additional_info_uri->c_str(), "string");
 }
 
-void cmp_product_detail_fields(const BankingProductDetail &detail)
+void test_product_eligibility_fields(const BankingProductEligibility &eligibility)
 {
-    cmp_product_v2_fields(detail.product.value());
-    EXPECT_EQ(detail.bundles.value().size(), 1);
-    cmp_product_bundle_fields(detail.bundles.value()[0]);
-    EXPECT_EQ(detail.features.value().size(), 1);
-    cmp_product_feature_fields(detail.features.value()[0]);
-    EXPECT_EQ(detail.constraints.value().size(), 1);
-    cmp_product_constraint_fields(detail.constraints.value()[0]);
+    EXPECT_EQ(eligibility.eligibility_type, static_cast<EligibilityType>(0));
+    EXPECT_STREQ(eligibility.additional_value->c_str(), "string");
+    EXPECT_STREQ(eligibility.additional_info->c_str(), "string");
+    EXPECT_STREQ(eligibility.additional_info_uri->c_str(), "string");
 }
 
-TEST(TypeDeserialization, BankingProductV2)
+void test_product_discount_eligibility_fields(const BankingProductDiscountEligibility &eligibility)
 {
-    object = parser.parse(BANKING_PRODUCT_V2).extract<Poco::JSON::Object::Ptr>();
-    BankingProductV2 product;
-    product.deserialize(object);
-    cmp_product_v2_fields(product);
+    EXPECT_EQ(eligibility.discount_eligibility_type, static_cast<DiscountEligibilityType>(0));
+    EXPECT_STREQ(eligibility.additional_value->c_str(), "string");
+    EXPECT_STREQ(eligibility.additional_info->c_str(), "string");
+    EXPECT_STREQ(eligibility.additional_info_uri->c_str(), "string");
 }
 
-TEST(TypeDeserialization, BankingProductDetail)
+void test_product_discount_fields(const BankingProductDiscount &discount)
 {
-    object = parser.parse(BANKING_PRODUCT_DETAIL).extract<Poco::JSON::Object::Ptr>();
-    BankingProductDetail product_detail;
-    product_detail.deserialize(object);
-    cmp_product_detail_fields(product_detail);
-}
-
-TEST(TypeDeserialization, BankingProductBundle)
-{
-    object = parser.parse(BANKING_PRODUCT_BUNDLE).extract<Poco::JSON::Object::Ptr>();
-    BankingProductBundle product_bundle;
-    product_bundle.deserialize(object);
-    cmp_product_bundle_fields(product_bundle);
-}
-
-TEST(TypeDeserialization, BankingProductFeature)
-{
-    object = parser.parse(BANKING_PRODUCT_FEATURE).extract<Poco::JSON::Object::Ptr>();
-    BankingProductFeature product_feature;
-    product_feature.deserialize(object);
-    cmp_product_feature_fields(product_feature);
-}
-
-TEST(TypeDeserialization, BankingProductConstraint)
-{
-    object = parser.parse(BANKING_PRODUCT_CONSTRAINT).extract<Poco::JSON::Object::Ptr>();
-    BankingProductConstraint product_constraint;
-    product_constraint.deserialize(object);
-    cmp_product_constraint_fields(product_constraint);
-}
-
-TEST(TypeDeserialization, BankingProductEligibility)
-{
-    object = parser.parse(BANKING_PRODUCT_ELIGIBILITY).extract<Poco::JSON::Object::Ptr>();
-    BankingProductEligibility product_eligibility;
-    product_eligibility.deserialize(object);
-    EXPECT_EQ(product_eligibility.eligibility_type, EligibilityType::BUSINESS);
-    EXPECT_STREQ(product_eligibility.additional_value->c_str(), "string");
-    EXPECT_STREQ(product_eligibility.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_eligibility.additional_info_uri->c_str(), "string");
-}
-
-TEST(TypeDeserialization, BankingProductFee)
-{
-    object = parser.parse(BANKING_PRODUCT_FEE).extract<Poco::JSON::Object::Ptr>();
-    BankingProductFee product_fee;
-    product_fee.deserialize(object);
-    EXPECT_STREQ(product_fee.name.c_str(), "string");
-    EXPECT_EQ(product_fee.fee_type, FeeType::PERIODIC);
-    EXPECT_STREQ(product_fee.amount->c_str(), "string");
-    EXPECT_STREQ(product_fee.balance_rate->c_str(), "string");
-    EXPECT_STREQ(product_fee.transaction_rate->c_str(), "string");
-    EXPECT_STREQ(product_fee.accrued_rate->c_str(), "string");
-    EXPECT_STREQ(product_fee.accrual_frequency->c_str(), "string");
-    EXPECT_STREQ(product_fee.currency->c_str(), "string");
-    EXPECT_STREQ(product_fee.additional_value->c_str(), "string");
-    EXPECT_STREQ(product_fee.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_fee.additional_info_uri->c_str(), "string");
-    auto discount = product_fee.discounts.value()[0];
     EXPECT_STREQ(discount.description.c_str(), "string");
     EXPECT_STREQ(discount.description.c_str(), "string");
-    EXPECT_EQ(discount.discount_type, DiscountType::BALANCE);
+    EXPECT_EQ(discount.discount_type, static_cast<DiscountType>(0));
     EXPECT_STREQ(discount.amount->c_str(), "string");
     EXPECT_STREQ(discount.balance_rate->c_str(), "string");
     EXPECT_STREQ(discount.transaction_rate->c_str(), "string");
@@ -147,148 +88,503 @@ TEST(TypeDeserialization, BankingProductFee)
     EXPECT_STREQ(discount.additional_value->c_str(), "string");
     EXPECT_STREQ(discount.additional_info->c_str(), "string");
     EXPECT_STREQ(discount.additional_info_uri->c_str(), "string");
-    EXPECT_EQ(discount.eligibility.value()[0].discount_eligibility_type, DiscountEligibilityType::BUSINESS);
-    EXPECT_STREQ(discount.eligibility.value()[0].additional_value->c_str(), "string");
-    EXPECT_STREQ(discount.eligibility.value()[0].additional_info->c_str(), "string");
-    EXPECT_STREQ(discount.eligibility.value()[0].additional_info_uri->c_str(), "string");
+    EXPECT_EQ(discount.eligibility.value().size(), 1);
+    test_product_discount_eligibility_fields(discount.eligibility.value()[0]);
 }
 
-TEST(TypeDeserialization, BankingProductDiscount)
+void test_product_fee_fields(const BankingProductFee &fee)
 {
-    object = parser.parse(BANKING_PRODUCT_DISCOUNT).extract<Poco::JSON::Object::Ptr>();
-    BankingProductDiscount product_discount;
-    product_discount.deserialize(object);
-    EXPECT_STREQ(product_discount.description.c_str(), "string");
-    EXPECT_EQ(product_discount.discount_type, DiscountType::BALANCE);
-    EXPECT_STREQ(product_discount.amount->c_str(), "string");
-    EXPECT_STREQ(product_discount.balance_rate->c_str(), "string");
-    EXPECT_STREQ(product_discount.transaction_rate->c_str(), "string");
-    EXPECT_STREQ(product_discount.accrued_rate->c_str(), "string");
-    EXPECT_STREQ(product_discount.fee_rate->c_str(), "string");
-    EXPECT_STREQ(product_discount.additional_value->c_str(), "string");
-    EXPECT_STREQ(product_discount.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_discount.additional_info_uri->c_str(), "string");
-    auto eligibility = product_discount.eligibility.value()[0];
-    EXPECT_EQ(eligibility.discount_eligibility_type, DiscountEligibilityType::BUSINESS);
-    EXPECT_STREQ(eligibility.additional_value->c_str(), "string");
-    EXPECT_STREQ(eligibility.additional_info->c_str(), "string");
-    EXPECT_STREQ(eligibility.additional_info_uri->c_str(), "string");
+    EXPECT_STREQ(fee.name.c_str(), "string");
+    EXPECT_EQ(fee.fee_type, static_cast<FeeType>(0));
+    EXPECT_STREQ(fee.amount->c_str(), "string");
+    EXPECT_STREQ(fee.balance_rate->c_str(), "string");
+    EXPECT_STREQ(fee.transaction_rate->c_str(), "string");
+    EXPECT_STREQ(fee.accrued_rate->c_str(), "string");
+    EXPECT_STREQ(fee.accrual_frequency->c_str(), "string");
+    EXPECT_STREQ(fee.currency->c_str(), "string");
+    EXPECT_STREQ(fee.additional_value->c_str(), "string");
+    EXPECT_STREQ(fee.additional_info->c_str(), "string");
+    EXPECT_STREQ(fee.additional_info_uri->c_str(), "string");
+    EXPECT_EQ(fee.discounts.value().size(), 1);
+    test_product_discount_fields(fee.discounts.value()[0]);
 }
 
-TEST(TypeDeserialization, BankingProductDiscountEligibility)
+void test_product_rate_sub_tier_fields(const BankingProductRateSubTier &tier)
 {
-    object = parser.parse(BANKING_PRODUCT_DISCOUNT_ELIGIBILITY).extract<Poco::JSON::Object::Ptr>();
-    BankingProductDiscountEligibility product_discount_eligibility;
-    product_discount_eligibility.deserialize(object);
-    EXPECT_EQ(product_discount_eligibility.discount_eligibility_type, DiscountEligibilityType::BUSINESS);
-    EXPECT_STREQ(product_discount_eligibility.additional_value->c_str(), "string");
-    EXPECT_STREQ(product_discount_eligibility.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_discount_eligibility.additional_info_uri->c_str(), "string");
-}
-
-TEST(TypeDeserialization, BankingProductDepositRate)
-{
-    object = parser.parse(BANKING_PRODUCT_DEPOSIT_RATE).extract<Poco::JSON::Object::Ptr>();
-    BankingProductDepositRate product_deposit_rate;
-    product_deposit_rate.deserialize(object);
-    EXPECT_EQ(product_deposit_rate.deposit_rate_type, DepositRateType::FIXED);
-    EXPECT_STREQ(product_deposit_rate.rate.c_str(), "string");
-    EXPECT_STREQ(product_deposit_rate.calculation_frequency->c_str(), "string");
-    EXPECT_STREQ(product_deposit_rate.application_frequency->c_str(), "string");
-    auto tier = product_deposit_rate.tiers.value()[0];
     EXPECT_STREQ(tier.name.c_str(), "string");
-    EXPECT_EQ(tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_STREQ(tier.name.c_str(), "string");
+    EXPECT_EQ(tier.unit_of_measure, static_cast<UnitOfMeasure>(0));
     EXPECT_EQ(tier.minimum_value, 0);
     EXPECT_EQ(tier.maximum_value, 0);
-    EXPECT_EQ(tier.rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_EQ(tier.rate_application_method, static_cast<RateApplicationMethod>(0));
     EXPECT_STREQ(tier.applicability_conditions->additional_info->c_str(), "string");
     EXPECT_STREQ(tier.applicability_conditions->additional_info_uri->c_str(), "string");
-    EXPECT_STREQ(tier.sub_tier->name.c_str(), "string");
-    EXPECT_STREQ(tier.sub_tier->name.c_str(), "string");
-    EXPECT_EQ(tier.sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(tier.sub_tier->minimum_value, 0);
-    EXPECT_EQ(tier.sub_tier->maximum_value, 0);
-    EXPECT_EQ(tier.sub_tier->rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(tier.sub_tier->applicability_conditions->additional_info->c_str(), "string");
-    EXPECT_STREQ(tier.sub_tier->applicability_conditions->additional_info_uri->c_str(), "string");
-    EXPECT_STREQ(product_deposit_rate.additional_value->c_str(), "string");
-    EXPECT_STREQ(product_deposit_rate.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_deposit_rate.additional_info_uri->c_str(), "string");
 }
 
-TEST(TypeDeserialization, BankingProductLendingRate)
+void test_product_rate_tier_fields(const BankingProductRateTier &tier)
 {
-    object = parser.parse(BANKING_PRODUCT_LENDING_RATE).extract<Poco::JSON::Object::Ptr>();
-    BankingProductLendingRate product_lending_rate;
-    product_lending_rate.deserialize(object);
-    EXPECT_EQ(product_lending_rate.lending_rate_type, LendingRateType::FIXED);
-    EXPECT_STREQ(product_lending_rate.rate.c_str(), "string");
-    EXPECT_STREQ(product_lending_rate.comparison_rate->c_str(), "string");
-    EXPECT_STREQ(product_lending_rate.calculation_frequency->c_str(), "string");
-    EXPECT_STREQ(product_lending_rate.application_frequency->c_str(), "string");
-    EXPECT_EQ(product_lending_rate.interest_payment_due, InterestPaymentDue::IN_ARREARS);
-    auto tier = product_lending_rate.tiers.value()[0];
     EXPECT_STREQ(tier.name.c_str(), "string");
-    EXPECT_EQ(tier.unit_of_measure, UnitOfMeasure::DOLLAR);
+    EXPECT_EQ(tier.unit_of_measure, static_cast<UnitOfMeasure>(0));
     EXPECT_EQ(tier.minimum_value, 0);
     EXPECT_EQ(tier.maximum_value, 0);
-    EXPECT_EQ(tier.rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
+    EXPECT_EQ(tier.rate_application_method, static_cast<RateApplicationMethod>(0));
     EXPECT_STREQ(tier.applicability_conditions->additional_info->c_str(), "string");
     EXPECT_STREQ(tier.applicability_conditions->additional_info_uri->c_str(), "string");
-    EXPECT_STREQ(tier.sub_tier->name.c_str(), "string");
-    EXPECT_EQ(tier.sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(tier.sub_tier->minimum_value, 0);
-    EXPECT_EQ(tier.sub_tier->maximum_value, 0);
-    EXPECT_EQ(tier.sub_tier->rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(tier.sub_tier->applicability_conditions->additional_info->c_str(), "string");
-    EXPECT_STREQ(tier.sub_tier->applicability_conditions->additional_info_uri->c_str(), "string");
-    EXPECT_STREQ(product_lending_rate.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_lending_rate.additional_info_uri->c_str(), "string");
+    test_product_rate_sub_tier_fields(tier.sub_tier.value());
 }
 
-TEST(TypeDeserialization, BankingProductRateTier)
+void test_product_deposit_rate_fields(const BankingProductDepositRate &rate)
 {
-    object = parser.parse(BANKING_PRODUCT_RATE_TIER).extract<Poco::JSON::Object::Ptr>();
-    BankingProductRateTier product_rate_tier;
-    product_rate_tier.deserialize(object);
-    EXPECT_STREQ(product_rate_tier.name.c_str(), "string");
-    EXPECT_EQ(product_rate_tier.unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(product_rate_tier.minimum_value, 0);
-    EXPECT_EQ(product_rate_tier.maximum_value, 0);
-    EXPECT_EQ(product_rate_tier.rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(product_rate_tier.applicability_conditions->additional_info->c_str(), "string");
-    EXPECT_STREQ(product_rate_tier.applicability_conditions->additional_info_uri->c_str(), "string");
-    EXPECT_STREQ(product_rate_tier.sub_tier->name.c_str(), "string");
-    EXPECT_EQ(product_rate_tier.sub_tier->unit_of_measure, UnitOfMeasure::DOLLAR);
-    EXPECT_EQ(product_rate_tier.sub_tier->minimum_value, 0);
-    EXPECT_EQ(product_rate_tier.sub_tier->maximum_value, 0);
-    EXPECT_EQ(product_rate_tier.sub_tier->rate_application_method, RateApplicationMethod::WHOLE_BALANCE);
-    EXPECT_STREQ(product_rate_tier.sub_tier->applicability_conditions->additional_info->c_str(), "string");
-    EXPECT_STREQ(product_rate_tier.sub_tier->applicability_conditions->additional_info_uri->c_str(), "string");
+    EXPECT_EQ(rate.deposit_rate_type, static_cast<DepositRateType>(0));
+    EXPECT_STREQ(rate.rate.c_str(), "string");
+    EXPECT_STREQ(rate.calculation_frequency->c_str(), "string");
+    EXPECT_STREQ(rate.application_frequency->c_str(), "string");
+    EXPECT_EQ(rate.tiers.value().size(), 1);
+    test_product_rate_tier_fields(rate.tiers.value()[0]);
+    EXPECT_STREQ(rate.additional_value->c_str(), "string");
+    EXPECT_STREQ(rate.additional_info->c_str(), "string");
+    EXPECT_STREQ(rate.additional_info_uri->c_str(), "string");
 }
 
-TEST(TypeDeserialization, ProductRateCondition)
+void test_product_lending_rate_fields(const BankingProductLendingRate &rate)
 {
-    object = parser.parse(BANKING_PRODUCT_RATE_CONDITION).extract<Poco::JSON::Object::Ptr>();
-    BankingProductRateCondition product_rate_condition;
-    product_rate_condition.deserialize(object);
-    EXPECT_STREQ(product_rate_condition.additional_info->c_str(), "string");
-    EXPECT_STREQ(product_rate_condition.additional_info_uri->c_str(), "string");
+    EXPECT_EQ(rate.lending_rate_type, static_cast<LendingRateType>(0));
+    EXPECT_STREQ(rate.rate.c_str(), "string");
+    EXPECT_STREQ(rate.comparison_rate->c_str(), "string");
+    EXPECT_STREQ(rate.calculation_frequency->c_str(), "string");
+    EXPECT_STREQ(rate.application_frequency->c_str(), "string");
+    EXPECT_EQ(rate.interest_payment_due, static_cast<InterestPaymentDue>(0));
+    EXPECT_EQ(rate.tiers.value().size(), 1);
+    test_product_rate_tier_fields(rate.tiers.value()[0]);
+    EXPECT_STREQ(rate.additional_value->c_str(), "string");
+    EXPECT_STREQ(rate.additional_info->c_str(), "string");
+    EXPECT_STREQ(rate.additional_info_uri->c_str(), "string");
 }
 
-TEST(TypeDeserialization, BankingAccount)
+void test_product_rate_condition_fields(const BankingProductRateCondition &condition)
 {
-    object = parser.parse(BANKING_ACCOUNT).extract<Poco::JSON::Object::Ptr>();
-    BankingAccount account;
-    account.deserialize(object);
+    EXPECT_STREQ(condition.additional_info->c_str(), "string");
+    EXPECT_STREQ(condition.additional_info_uri->c_str(), "string");
+}
+
+void test_product_detail_fields(const BankingProductDetail &detail)
+{
+    test_product_v2_fields(detail.product.value());
+    EXPECT_EQ(detail.bundles.value().size(), 1);
+    test_product_bundle_fields(detail.bundles.value()[0]);
+    EXPECT_EQ(detail.features.value().size(), 1);
+    test_product_feature_fields(detail.features.value()[0]);
+    EXPECT_EQ(detail.constraints.value().size(), 1);
+    test_product_constraint_fields(detail.constraints.value()[0]);
+    EXPECT_EQ(detail.eligibility.value().size(), 1);
+    test_product_eligibility_fields(detail.eligibility.value()[0]);
+    EXPECT_EQ(detail.fees.value().size(), 1);
+    test_product_fee_fields(detail.fees.value()[0]);
+    EXPECT_EQ(detail.deposit_rates.value().size(), 1);
+    test_product_deposit_rate_fields(detail.deposit_rates.value()[0]);
+    EXPECT_EQ(detail.lending_rates.value().size(), 1);
+    test_product_lending_rate_fields(detail.lending_rates.value()[0]);
+}
+
+void test_account_fields(const BankingAccount &account)
+{
     EXPECT_STREQ(account.account_id.c_str(), "string");
     EXPECT_STREQ(account.creation_date->c_str(), "string");
     EXPECT_STREQ(account.display_name.c_str(), "string");
     EXPECT_STREQ(account.nickname->c_str(), "string");
     EXPECT_EQ(account.is_owned, true);
     EXPECT_STREQ(account.masked_number.c_str(), "string");
-    EXPECT_EQ(account.product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
+    EXPECT_EQ(account.product_category, static_cast<ProductCategory>(0));
     EXPECT_STREQ(account.product_name.c_str(), "string");
+}
+
+void test_term_deposit_account_fields(const BankingTermDepositAccount &account)
+{
+    EXPECT_STREQ(account.lodgement_date.c_str(), "string");
+    EXPECT_STREQ(account.maturity_date.c_str(), "string");
+    EXPECT_STREQ(account.maturity_amount->c_str(), "string");
+    EXPECT_STREQ(account.maturity_currency->c_str(), "string");
+    EXPECT_EQ(account.maturity_instructions, static_cast<MaturityInstructions>(0));
+}
+
+void test_credit_card_account_fields(const BankingCreditCardAccount &account)
+{
+    EXPECT_STREQ(account.min_payment_amount.c_str(), "string");
+    EXPECT_STREQ(account.payment_due_amount.c_str(), "string");
+    EXPECT_STREQ(account.payment_currency->c_str(), "string");
+    EXPECT_STREQ(account.payment_due_date.c_str(), "string");
+}
+
+void test_loan_account_fields(const BankingLoanAccount &account)
+{
+    EXPECT_STREQ(account.original_start_date->c_str(), "string");
+    EXPECT_STREQ(account.original_loan_amount->c_str(), "string");
+    EXPECT_STREQ(account.original_loan_currency->c_str(), "string");
+    EXPECT_STREQ(account.loan_end_date.c_str(), "string");
+    EXPECT_STREQ(account.next_instalment_date.c_str(), "string");
+    EXPECT_STREQ(account.min_instalment_amount->c_str(), "string");
+    EXPECT_STREQ(account.min_instalment_currency->c_str(), "string");
+    EXPECT_STREQ(account.max_redraw->c_str(), "string");
+    EXPECT_STREQ(account.max_redraw_currency->c_str(), "string");
+    EXPECT_STREQ(account.min_redraw->c_str(), "string");
+    EXPECT_STREQ(account.min_redraw_currency->c_str(), "string");
+    EXPECT_EQ(account.offset_account_enabled, true);
+    EXPECT_STREQ(account.offset_account_ids.value()[0].c_str(), "string");
+    EXPECT_EQ(account.repayment_type, static_cast<RepaymentType>(0));
+    EXPECT_STREQ(account.repayment_frequency.c_str(), "string");
+}
+
+void test_transaction_fields(const BankingTransaction &transaction)
+{
+    EXPECT_STREQ(transaction.account_id.c_str(), "string");
+    EXPECT_STREQ(transaction.transaction_id->c_str(), "string");
+    EXPECT_EQ(transaction.is_detail_available, true);
+    EXPECT_EQ(transaction.type, static_cast<TransactionType>(0));
+    EXPECT_EQ(transaction.status, static_cast<TransactionStatus>(0));
+    EXPECT_STREQ(transaction.description.c_str(), "string");
+    EXPECT_STREQ(transaction.posting_date_time->c_str(), "string");
+    EXPECT_STREQ(transaction.value_date_time->c_str(), "string");
+    EXPECT_STREQ(transaction.execution_date_time->c_str(), "string");
+    EXPECT_STREQ(transaction.amount.c_str(), "string");
+    EXPECT_STREQ(transaction.currency->c_str(), "string");
+    EXPECT_STREQ(transaction.reference.c_str(), "string");
+    EXPECT_STREQ(transaction.merchant_name->c_str(), "string");
+    EXPECT_STREQ(transaction.merchant_category_code->c_str(), "string");
+    EXPECT_STREQ(transaction.biller_code->c_str(), "string");
+    EXPECT_STREQ(transaction.biller_name->c_str(), "string");
+    EXPECT_STREQ(transaction.crn->c_str(), "string");
+    EXPECT_STREQ(transaction.apca_number->c_str(), "string");
+}
+
+void test_transaction_detail_fields(const BankingTransactionDetail &detail)
+{
+    test_transaction_fields(detail.transaction.value());
+    EXPECT_STREQ(detail.extended_data.payer->c_str(), "string");
+    EXPECT_STREQ(detail.extended_data.payee->c_str(), "string");
+    EXPECT_EQ(detail.extended_data.extension_u_type, static_cast<ExtensionUType>(0));
+    EXPECT_STREQ(detail.extended_data.x2p101_payload->extended_description.c_str(), "string");
+    EXPECT_STREQ(detail.extended_data.x2p101_payload->end_to_end_id->c_str(), "string");
+    EXPECT_STREQ(detail.extended_data.x2p101_payload->purpose_code->c_str(), "string");
+    EXPECT_EQ(detail.extended_data.service, static_cast<TransactionOverlayService>(0));
+}
+
+void test_account_detail_fields(const BankingAccountDetail &detail)
+{
+    EXPECT_STREQ(detail.bsb->c_str(), "string");
+    EXPECT_STREQ(detail.account_number->c_str(), "string");
+    EXPECT_STREQ(detail.bundle_name->c_str(), "string");
+    EXPECT_EQ(detail.specific_account_u_type, static_cast<SpecificAccountUType>(0));
+    EXPECT_EQ(detail.term_deposit.value().size(), 1);
+    test_term_deposit_account_fields(detail.term_deposit.value()[0]);
+    test_credit_card_account_fields(detail.credit_card.value());
+    test_loan_account_fields(detail.loan.value());
+    EXPECT_STREQ(detail.deposit_rate->c_str(), "string");
+    EXPECT_STREQ(detail.lending_rate->c_str(), "string");
+    EXPECT_EQ(detail.deposit_rates.value().size(), 1);
+    test_product_deposit_rate_fields(detail.deposit_rates.value()[0]);
+    EXPECT_EQ(detail.lending_rates.value().size(), 1);
+    test_product_lending_rate_fields(detail.lending_rates.value()[0]);
+    EXPECT_EQ(detail.features.value().size(), 1);
+//    test_product_feature_fields(detail.features.value()[0]); FIXME
+    EXPECT_EQ(detail.fees.value().size(), 1);
+    test_product_fee_fields(detail.fees.value()[0]);
+}
+
+void test_balance_purse_fields(const BankingBalancePurse &purse)
+{
+    EXPECT_STREQ(purse.amount.c_str(), "string");
+    EXPECT_STREQ(purse.currency->c_str(), "string");
+}
+
+void test_balance_fields(const BankingBalance &balance)
+{
+    EXPECT_STREQ(balance.account_id.c_str(), "string");
+    EXPECT_STREQ(balance.current_balance.c_str(), "string");
+    EXPECT_STREQ(balance.available_balance.c_str(), "string");
+    EXPECT_STREQ(balance.credit_limit->c_str(), "string");
+    EXPECT_STREQ(balance.amortised_limit->c_str(), "string");
+    EXPECT_STREQ(balance.currency->c_str(), "string");
+    EXPECT_EQ(balance.purses.value().size(), 1);
+    test_balance_purse_fields(balance.purses.value()[0]);
+}
+
+void test_payee_fields(const BankingPayee &payee)
+{
+    EXPECT_STREQ(payee.payee_id.c_str(), "string");
+    EXPECT_STREQ(payee.nickname.c_str(), "string");
+    EXPECT_STREQ(payee.description->c_str(), "string");
+    EXPECT_EQ(payee.type, static_cast<PayeeType>(0));
+    EXPECT_STREQ(payee.creation_date->c_str(), "string");
+}
+
+void test_domestic_payee_account_fields(const BankingDomesticPayeeAccount &account)
+{
+    EXPECT_STREQ(account.account_name->c_str(), "string");
+    EXPECT_STREQ(account.bsb.c_str(), "string");
+    EXPECT_STREQ(account.account_number.c_str(), "string");
+}
+
+void test_domestic_payee_card_fields(const BankingDomesticPayeeCard &card)
+{
+    EXPECT_STREQ(card.card_number.c_str(), "string");
+}
+
+void test_domestic_payee_pay_id_fields(const BankingDomesticPayeePayId &pay_id)
+{
+    EXPECT_STREQ(pay_id.name->c_str(), "string");
+    EXPECT_STREQ(pay_id.identifier.c_str(), "string");
+    EXPECT_EQ(pay_id.type, PayIdType::EMAIL);
+}
+
+void test_domestic_payee_fields(const BankingDomesticPayee &payee)
+{
+    EXPECT_EQ(payee.payee_account_u_type, static_cast<PayeeAccountUType>(0));
+    test_domestic_payee_account_fields(payee.account.value());
+    test_domestic_payee_card_fields(payee.card.value());
+    test_domestic_payee_pay_id_fields(payee.pay_id.value());
+}
+
+void test_biller_payee_fields(const BankingBillerPayee &payee)
+{
+    EXPECT_STREQ(payee.biller_code.c_str(), "string");
+    EXPECT_STREQ(payee.crn->c_str(), "string");
+    EXPECT_STREQ(payee.biller_name.c_str(), "string");
+}
+
+void test_international_payee_fields(const BankingInternationalPayee &payee)
+{
+    EXPECT_STREQ(payee.beneficiary_details.name->c_str(), "string");
+    EXPECT_STREQ(payee.beneficiary_details.country.c_str(), "string");
+    EXPECT_STREQ(payee.beneficiary_details.message->c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.country.c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.bank_address.name.c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.bank_address.address.c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.beneficiary_bank_bic->c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.fed_wire_number->c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.sort_code->c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.chip_number->c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.routing_number->c_str(), "string");
+    EXPECT_STREQ(payee.bank_details.legal_entity_identifier->c_str(), "string");
+}
+
+void test_payee_detail_fields(const BankingPayeeDetail &detail)
+{
+    test_payee_fields(detail.payee.value());
+    EXPECT_EQ(detail.payee_u_type, static_cast<PayeeUType>(0));
+    EXPECT_EQ(detail.domestic->payee_account_u_type, static_cast<PayeeAccountUType>(0));
+    test_domestic_payee_fields(detail.domestic.value());
+    test_biller_payee_fields(detail.biller.value());
+    test_international_payee_fields(detail.international.value());
+}
+
+void test_authorised_entity_fields(const BankingAuthorisedEntity &entity)
+{
+    EXPECT_STREQ(entity.description->c_str(), "string");
+    EXPECT_STREQ(entity.financial_institution->c_str(), "string");
+    EXPECT_STREQ(entity.abn->c_str(), "string");
+    EXPECT_STREQ(entity.acn->c_str(), "string");
+    EXPECT_STREQ(entity.arbn->c_str(), "string");
+}
+
+void test_direct_debit_fields(const BankingDirectDebit &direct_debit)
+{
+    EXPECT_STREQ(direct_debit.account_id.c_str(), "string");
+    test_authorised_entity_fields(direct_debit.authorised_entity);
+    EXPECT_STREQ(direct_debit.last_debit_date_time->c_str(), "string");
+    EXPECT_STREQ(direct_debit.last_debit_amount->c_str(), "string");
+}
+
+void test_scheduled_payment_from_fields(const BankingScheduledPaymentFrom &from)
+{
+    EXPECT_STREQ(from.account_id.c_str(), "string");
+}
+
+void test_scheduled_payment_to_fields(const BankingScheduledPaymentTo &to)
+{
+    EXPECT_EQ(to.to_u_type, ToUType::ACCOUNT_ID);
+    EXPECT_STREQ(to.account_id->c_str(), "string");
+    EXPECT_STREQ(to.payee_id->c_str(), "string");
+    test_domestic_payee_fields(to.domestic.value());
+    test_biller_payee_fields(to.biller.value());
+    test_international_payee_fields(to.international.value());
+}
+
+void test_scheduled_payment_set_fields(const BankingScheduledPaymentSet &set)
+{
+    test_scheduled_payment_to_fields(set.to);
+    EXPECT_EQ(set.is_amount_calculated, true);
+    EXPECT_STREQ(set.amount->c_str(), "string");
+    EXPECT_STREQ(set.currency->c_str(), "string");
+}
+
+void test_scheduled_payment_interval_fields(const BankingScheduledPaymentInterval &interval)
+{
+    EXPECT_STREQ(interval.interval.c_str(), "string");
+    EXPECT_STREQ(interval.day_in_interval->c_str(), "string");
+}
+
+void test_scheduled_payment_recurrence_once_off_fields(const BankingScheduledPaymentRecurrenceOnceOff &once_off)
+{
+    EXPECT_STREQ(once_off.payment_date.c_str(), "string");
+}
+
+void test_scheduled_payment_recurrence_last_weekday_fields(const BankingScheduledPaymentRecurrenceLastWeekday &interval)
+{
+    EXPECT_STREQ(interval.final_payment_date->c_str(), "string");
+    EXPECT_EQ(interval.payments_remaining, 0);
+    EXPECT_STREQ(interval.interval.c_str(), "string");
+    EXPECT_EQ(interval.last_week_day, LastWeekDay::MON);
+    EXPECT_EQ(interval.non_business_day_treatment, NonBusinessDayTreatment::ON);
+}
+
+void test_scheduled_payment_recurrence_interval_schedule_fields(
+        const BankingScheduledPaymentRecurrenceIntervalSchedule &interval)
+{
+    EXPECT_STREQ(interval.final_payment_date->c_str(), "string");
+    EXPECT_EQ(interval.payments_remaining, 0);
+    EXPECT_EQ(interval.non_business_day_treatment, NonBusinessDayTreatment::ON);
+    EXPECT_EQ(interval.intervals.size(), 1);
+    test_scheduled_payment_interval_fields(interval.intervals[0]);
+}
+
+void test_scheduled_payment_recurrence_event_based_fields(const BankingScheduledPaymentRecurrenceEventBased &event)
+{
+    EXPECT_STREQ(event.description.c_str(), "string");
+}
+
+void test_scheduled_payment_recurrence_fields(const BankingScheduledPaymentRecurrence &recurrence)
+{
+    EXPECT_STREQ(recurrence.next_payment_date->c_str(), "string");
+    EXPECT_EQ(recurrence.recurrence_u_type, RecurrenceUType::ONCE_OFF);
+    test_scheduled_payment_recurrence_once_off_fields(recurrence.once_off.value());
+    test_scheduled_payment_recurrence_interval_schedule_fields(recurrence.interval_schedule.value());
+    test_scheduled_payment_recurrence_last_weekday_fields(recurrence.last_week_day.value());
+    test_scheduled_payment_recurrence_event_based_fields(recurrence.event_based.value());
+}
+
+void test_scheduled_payment_fields(const BankingScheduledPayment &payment)
+{
+    EXPECT_STREQ(payment.scheduled_payment_id.c_str(), "string");
+    EXPECT_STREQ(payment.nickname->c_str(), "string");
+    EXPECT_STREQ(payment.payer_reference.c_str(), "string");
+    EXPECT_STREQ(payment.payee_reference.c_str(), "string");
+    EXPECT_EQ(payment.status, static_cast<ScheduledPaymentStatus>(0));
+    EXPECT_EQ(payment.payment_set.size(), 1);
+    test_scheduled_payment_from_fields(payment.from);
+    test_scheduled_payment_set_fields(payment.payment_set[0]);
+    test_scheduled_payment_recurrence_fields(payment.recurrence);
+}
+
+TEST(TypeDeserialization, BankingProductV2)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_V2);
+    BankingProductV2 product;
+    product.deserialize(object);
+    test_product_v2_fields(product);
+}
+
+TEST(TypeDeserialization, BankingProductDetail)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_DETAIL);
+    BankingProductDetail product_detail;
+    product_detail.deserialize(object);
+    test_product_detail_fields(product_detail);
+}
+
+TEST(TypeDeserialization, BankingProductBundle)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_BUNDLE);
+    BankingProductBundle product_bundle;
+    product_bundle.deserialize(object);
+    test_product_bundle_fields(product_bundle);
+}
+
+TEST(TypeDeserialization, BankingProductFeature)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_FEATURE);
+    BankingProductFeature product_feature;
+    product_feature.deserialize(object);
+    test_product_feature_fields(product_feature);
+}
+
+TEST(TypeDeserialization, BankingProductConstraint)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_CONSTRAINT);
+    BankingProductConstraint product_constraint;
+    product_constraint.deserialize(object);
+    test_product_constraint_fields(product_constraint);
+}
+
+TEST(TypeDeserialization, BankingProductEligibility)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_ELIGIBILITY);
+    BankingProductEligibility product_eligibility;
+    product_eligibility.deserialize(object);
+    test_product_eligibility_fields(product_eligibility);
+}
+
+TEST(TypeDeserialization, BankingProductFee)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_FEE);
+    BankingProductFee product_fee;
+    product_fee.deserialize(object);
+    test_product_fee_fields(product_fee);
+}
+
+TEST(TypeDeserialization, BankingProductDiscount)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_DISCOUNT);
+    BankingProductDiscount product_discount;
+    product_discount.deserialize(object);
+    test_product_discount_fields(product_discount);
+}
+
+TEST(TypeDeserialization, BankingProductDiscountEligibility)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_DISCOUNT_ELIGIBILITY);
+    BankingProductDiscountEligibility product_discount_eligibility;
+    product_discount_eligibility.deserialize(object);
+    test_product_discount_eligibility_fields(product_discount_eligibility);
+}
+
+TEST(TypeDeserialization, BankingProductDepositRate)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_DEPOSIT_RATE);
+    BankingProductDepositRate product_deposit_rate;
+    product_deposit_rate.deserialize(object);
+    test_product_deposit_rate_fields(product_deposit_rate);
+}
+
+TEST(TypeDeserialization, BankingProductLendingRate)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_LENDING_RATE);
+    BankingProductLendingRate product_lending_rate;
+    product_lending_rate.deserialize(object);
+    test_product_lending_rate_fields(product_lending_rate);
+}
+
+TEST(TypeDeserialization, BankingProductRateTier)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_RATE_TIER);
+    BankingProductRateTier product_rate_tier;
+    product_rate_tier.deserialize(object);
+    test_product_rate_tier_fields(product_rate_tier);
+}
+
+TEST(TypeDeserialization, ProductRateCondition)
+{
+    EXTRACT_OBJECT(object, BANKING_PRODUCT_RATE_CONDITION);
+    BankingProductRateCondition product_rate_condition;
+    product_rate_condition.deserialize(object);
+    test_product_rate_condition_fields(product_rate_condition);
+}
+
+TEST(TypeDeserialization, BankingAccount)
+{
+    EXTRACT_OBJECT(object, BANKING_ACCOUNT);
+    BankingAccount account;
+    account.deserialize(object);
+    test_account_fields(account);
 }
 
 TEST(TypeDeserialization, BankingAccountDetail)
@@ -296,45 +592,8 @@ TEST(TypeDeserialization, BankingAccountDetail)
     object = parser.parse(BANKING_ACCOUNT_DETAIL).extract<Poco::JSON::Object::Ptr>();
     BankingAccountDetail account_detail;
     account_detail.deserialize(object);
-    EXPECT_STREQ(account_detail.account.account_id.c_str(), "string");
-    EXPECT_STREQ(account_detail.account.creation_date->c_str(), "string");
-    EXPECT_STREQ(account_detail.account.display_name.c_str(), "string");
-    EXPECT_STREQ(account_detail.account.nickname->c_str(), "string");
-    EXPECT_EQ(account_detail.account.open_status, OpenStatus::OPEN);
-    EXPECT_EQ(account_detail.account.is_owned, true);
-    EXPECT_STREQ(account_detail.account.masked_number.c_str(), "string");
-    EXPECT_EQ(account_detail.account.product_category, ProductCategory::TRANS_AND_SAVINGS_ACCOUNTS);
-    EXPECT_STREQ(account_detail.account.product_name.c_str(), "string");
-    EXPECT_STREQ(account_detail.bsb->c_str(), "string");
-    EXPECT_STREQ(account_detail.account_number->c_str(), "string");
-    EXPECT_STREQ(account_detail.bundle_name->c_str(), "string");
-    EXPECT_EQ(account_detail.specific_account_u_type, SpecificAccountUType::TERM_DEPOSIT);
-    EXPECT_STREQ(account_detail.term_deposit.value()[0].lodgement_date.c_str(), "string");
-    EXPECT_STREQ(account_detail.term_deposit.value()[0].maturity_date.c_str(), "string");
-    EXPECT_STREQ(account_detail.term_deposit.value()[0].maturity_amount->c_str(), "string");
-    EXPECT_STREQ(account_detail.term_deposit.value()[0].maturity_currency->c_str(), "string");
-    EXPECT_EQ(account_detail.term_deposit.value()[0].maturity_instructions, MaturityInstructions::ROLLED_OVER);
-    EXPECT_STREQ(account_detail.credit_card->min_payment_amount.c_str(), "string");
-    EXPECT_STREQ(account_detail.credit_card->payment_due_amount.c_str(), "string");
-    EXPECT_STREQ(account_detail.credit_card->payment_currency->c_str(), "string");
-    EXPECT_STREQ(account_detail.credit_card->payment_due_date.c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->original_start_date->c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->original_loan_amount->c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->original_loan_currency->c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->loan_end_date.c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->next_instalment_date.c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->min_instalment_amount->c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->min_instalment_currency->c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->max_redraw->c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->max_redraw_currency->c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->min_redraw->c_str(), "string");
-    EXPECT_STREQ(account_detail.loan->min_redraw_currency->c_str(), "string");
-    EXPECT_EQ(account_detail.loan->offset_account_enabled, true);
-    EXPECT_STREQ(account_detail.loan->offset_account_ids.value()[0].c_str(), "string");
-    EXPECT_EQ(account_detail.loan->repayment_type, RepaymentType::PRINCIPAL_AND_INTEREST);
-    EXPECT_STREQ(account_detail.loan->repayment_frequency.c_str(), "string");
-    EXPECT_STREQ(account_detail.deposit_rate->c_str(), "string");
-    EXPECT_STREQ(account_detail.lending_rate->c_str(), "string");
+
+
     auto deposit_rate = account_detail.deposit_rates.value()[0];
     EXPECT_EQ(deposit_rate.deposit_rate_type, DepositRateType::FIXED);
     EXPECT_STREQ(deposit_rate.rate.c_str(), "string");
@@ -451,488 +710,218 @@ TEST(TypeDeserialization, BankingAccountDetail)
 
 TEST(TypeDeserialization, BankingTermDepositAccount)
 {
-    object = parser.parse(BANKING_TERM_DEPOSIT_ACCOUNT).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_TERM_DEPOSIT_ACCOUNT);
     BankingTermDepositAccount term_deposit_account;
     term_deposit_account.deserialize(object);
-    EXPECT_STREQ(term_deposit_account.lodgement_date.c_str(), "string");
-    EXPECT_STREQ(term_deposit_account.maturity_date.c_str(), "string");
-    EXPECT_STREQ(term_deposit_account.maturity_amount->c_str(), "string");
-    EXPECT_STREQ(term_deposit_account.maturity_currency->c_str(), "string");
-    EXPECT_EQ(term_deposit_account.maturity_instructions, MaturityInstructions::ROLLED_OVER);
+    test_term_deposit_account_fields(term_deposit_account);
 }
 
 TEST(TypeDeserialization, CreditCardAccount)
 {
-    object = parser.parse(BANKING_CREDIT_CARD_ACCOUNT).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_CREDIT_CARD_ACCOUNT);
     BankingCreditCardAccount credit_card_account;
     credit_card_account.deserialize(object);
-    EXPECT_STREQ(credit_card_account.min_payment_amount.c_str(), "string");
-    EXPECT_STREQ(credit_card_account.payment_due_amount.c_str(), "string");
-    EXPECT_STREQ(credit_card_account.payment_currency->c_str(), "string");
-    EXPECT_STREQ(credit_card_account.payment_due_date.c_str(), "string");
+    test_credit_card_account_fields(credit_card_account);
 }
 
 TEST(TypeDeserialization, BankingLoanAccount)
 {
-    object = parser.parse(BANKING_LOAN_ACCOUNT).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_LOAN_ACCOUNT);
     BankingLoanAccount loan_account;
     loan_account.deserialize(object);
-    EXPECT_STREQ(loan_account.original_start_date->c_str(), "string");
-    EXPECT_STREQ(loan_account.original_loan_amount->c_str(), "string");
-    EXPECT_STREQ(loan_account.original_loan_currency->c_str(), "string");
-    EXPECT_STREQ(loan_account.loan_end_date.c_str(), "string");
-    EXPECT_STREQ(loan_account.next_instalment_date.c_str(), "string");
-    EXPECT_STREQ(loan_account.min_instalment_amount->c_str(), "string");
-    EXPECT_STREQ(loan_account.min_instalment_currency->c_str(), "string");
-    EXPECT_STREQ(loan_account.max_redraw->c_str(), "string");
-    EXPECT_STREQ(loan_account.max_redraw_currency->c_str(), "string");
-    EXPECT_STREQ(loan_account.min_redraw->c_str(), "string");
-    EXPECT_STREQ(loan_account.min_redraw_currency->c_str(), "string");
-    EXPECT_EQ(loan_account.offset_account_enabled, true);
-    EXPECT_STREQ(loan_account.offset_account_ids.value()[0].c_str(), "string");
-    EXPECT_EQ(loan_account.repayment_type, RepaymentType::PRINCIPAL_AND_INTEREST);
-    EXPECT_STREQ(loan_account.repayment_frequency.c_str(), "string");
+    test_loan_account_fields(loan_account);
 }
 
 TEST(TypeDeserialization, BankingTransaction)
 {
-    object = parser.parse(BANKING_TRANSACTION).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_TRANSACTION);
     BankingTransaction transaction;
     transaction.deserialize(object);
-    EXPECT_STREQ(transaction.account_id.c_str(), "string");
-    EXPECT_STREQ(transaction.transaction_id->c_str(), "string");
-    EXPECT_EQ(transaction.is_detail_available, true);
-    EXPECT_EQ(transaction.type, TransactionType::FEE);
-    EXPECT_EQ(transaction.status, TransactionStatus::PENDING);
-    EXPECT_STREQ(transaction.description.c_str(), "string");
-    EXPECT_STREQ(transaction.posting_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction.value_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction.execution_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction.amount.c_str(), "string");
-    EXPECT_STREQ(transaction.currency->c_str(), "string");
-    EXPECT_STREQ(transaction.reference.c_str(), "string");
-    EXPECT_STREQ(transaction.merchant_name->c_str(), "string");
-    EXPECT_STREQ(transaction.merchant_category_code->c_str(), "string");
-    EXPECT_STREQ(transaction.biller_code->c_str(), "string");
-    EXPECT_STREQ(transaction.biller_name->c_str(), "string");
-    EXPECT_STREQ(transaction.crn->c_str(), "string");
-    EXPECT_STREQ(transaction.apca_number->c_str(), "string");
+    test_transaction_fields(transaction);
 }
 
 TEST(TypeDeserialization, BankingTransactionDetail)
 {
-    object = parser.parse(BANKING_TRANSACTION_DETAIL).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_TRANSACTION_DETAIL);
     BankingTransactionDetail transaction_detail;
     transaction_detail.deserialize(object);
-    auto transaction = transaction_detail.transaction;
-    EXPECT_STREQ(transaction->account_id.c_str(), "string");
-    EXPECT_STREQ(transaction->transaction_id->c_str(), "string");
-    EXPECT_EQ(transaction->is_detail_available, true);
-    EXPECT_EQ(transaction->type, TransactionType::FEE);
-    EXPECT_EQ(transaction->status, TransactionStatus::PENDING);
-    EXPECT_STREQ(transaction->description.c_str(), "string");
-    EXPECT_STREQ(transaction->posting_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction->value_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction->execution_date_time->c_str(), "string");
-    EXPECT_STREQ(transaction->amount.c_str(), "string");
-    EXPECT_STREQ(transaction->currency->c_str(), "string");
-    EXPECT_STREQ(transaction->reference.c_str(), "string");
-    EXPECT_STREQ(transaction->merchant_name->c_str(), "string");
-    EXPECT_STREQ(transaction->merchant_category_code->c_str(), "string");
-    EXPECT_STREQ(transaction->biller_code->c_str(), "string");
-    EXPECT_STREQ(transaction->biller_name->c_str(), "string");
-    EXPECT_STREQ(transaction->crn->c_str(), "string");
-    EXPECT_STREQ(transaction->apca_number->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.extended_data.payer->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.extended_data.payee->c_str(), "string");
-    EXPECT_EQ(transaction_detail.extended_data.extension_u_type, ExtensionUType::X2P101PAYLOAD);
-    EXPECT_STREQ(transaction_detail.extended_data.x2p101_payload->extended_description.c_str(), "string");
-    EXPECT_STREQ(transaction_detail.extended_data.x2p101_payload->end_to_end_id->c_str(), "string");
-    EXPECT_STREQ(transaction_detail.extended_data.x2p101_payload->purpose_code->c_str(), "string");
-    EXPECT_EQ(transaction_detail.extended_data.service, TransactionOverlayService::X2P101);
+    test_transaction_detail_fields(transaction_detail);
 }
 
 TEST(TypeDeserialization, BankingBalance)
 {
-    object = parser.parse(BANKING_BALANCE).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_BALANCE);
     BankingBalance balance;
     balance.deserialize(object);
-    EXPECT_STREQ(balance.account_id.c_str(), "string");
-    EXPECT_STREQ(balance.current_balance.c_str(), "string");
-    EXPECT_STREQ(balance.available_balance.c_str(), "string");
-    EXPECT_STREQ(balance.credit_limit->c_str(), "string");
-    EXPECT_STREQ(balance.amortised_limit->c_str(), "string");
-    EXPECT_STREQ(balance.currency->c_str(), "string");
-    EXPECT_STREQ(balance.purses.value()[0].amount.c_str(), "string");
-    EXPECT_STREQ(balance.purses.value()[0].currency->c_str(), "string");
+    test_balance_fields(balance);
 }
 
 TEST(TypeDeserialization, BankingBalancePurse)
 {
-    object = parser.parse(BANKING_BALANCE_PURSE).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_BALANCE_PURSE);
     BankingBalancePurse purse;
     purse.deserialize(object);
-    EXPECT_STREQ(purse.amount.c_str(), "string");
-    EXPECT_STREQ(purse.currency->c_str(), "string");
+    test_balance_purse_fields(purse);
 }
 
 TEST(TypeDeserialization, BankingPayee)
 {
-    object = parser.parse(BANKING_PAYEE).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_PAYEE);
     BankingPayee payee;
     payee.deserialize(object);
-    EXPECT_STREQ(payee.payee_id.c_str(), "string");
-    EXPECT_STREQ(payee.nickname.c_str(), "string");
-    EXPECT_STREQ(payee.description->c_str(), "string");
-    EXPECT_EQ(payee.type, PayeeType::DOMESTIC);
-    EXPECT_STREQ(payee.creation_date->c_str(), "string");
+    test_payee_fields(payee);
 }
 
 TEST(TypeDeserialization, BankingPayeeDetail)
 {
-    object = parser.parse(BANKING_PAYEE_DETAIL).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_PAYEE_DETAIL);
     BankingPayeeDetail payee_detail;
     payee_detail.deserialize(object);
-    EXPECT_STREQ(payee_detail.payee->payee_id.c_str(), "string");
-    EXPECT_STREQ(payee_detail.payee->nickname.c_str(), "string");
-    EXPECT_STREQ(payee_detail.payee->description->c_str(), "string");
-    EXPECT_EQ(payee_detail.payee->type, PayeeType::DOMESTIC);
-    EXPECT_STREQ(payee_detail.payee->creation_date->c_str(), "string");
-    EXPECT_EQ(payee_detail.payee_u_type, PayeeUType::DOMESTIC);
-    EXPECT_EQ(payee_detail.domestic->payee_account_u_type, PayeeAccountUType::ACCOUNT);
-    auto domestic = payee_detail.domestic;
-    EXPECT_STREQ(domestic->account->account_name->c_str(), "string");
-    EXPECT_STREQ(domestic->account->bsb.c_str(), "string");
-    EXPECT_STREQ(domestic->account->account_number.c_str(), "string");
-    EXPECT_STREQ(domestic->card->card_number.c_str(), "string");
-    EXPECT_STREQ(domestic->pay_id->name->c_str(), "string");
-    EXPECT_STREQ(domestic->pay_id->identifier.c_str(), "string");
-    EXPECT_EQ(domestic->pay_id->type, PayIdType::EMAIL);
-    auto biller = payee_detail.biller;
-    EXPECT_STREQ(biller->biller_code.c_str(), "string");
-    EXPECT_STREQ(biller->crn->c_str(), "string");
-    EXPECT_STREQ(biller->biller_name.c_str(), "string");
-    auto international = payee_detail.international;
-    EXPECT_STREQ(international->beneficiary_details.name->c_str(), "string");
-    EXPECT_STREQ(international->beneficiary_details.country.c_str(), "string");
-    EXPECT_STREQ(international->beneficiary_details.message->c_str(), "string");
-    EXPECT_STREQ(international->bank_details.country.c_str(), "string");
-    EXPECT_STREQ(international->bank_details.bank_address.name.c_str(), "string");
-    EXPECT_STREQ(international->bank_details.bank_address.address.c_str(), "string");
-    EXPECT_STREQ(international->bank_details.beneficiary_bank_bic->c_str(), "string");
-    EXPECT_STREQ(international->bank_details.fed_wire_number->c_str(), "string");
-    EXPECT_STREQ(international->bank_details.sort_code->c_str(), "string");
-    EXPECT_STREQ(international->bank_details.chip_number->c_str(), "string");
-    EXPECT_STREQ(international->bank_details.routing_number->c_str(), "string");
-    EXPECT_STREQ(international->bank_details.legal_entity_identifier->c_str(), "string");
+    test_payee_detail_fields(payee_detail);
 }
 
 TEST(TypeDeserialization, BankingDomesticPayee)
 {
-    object = parser.parse(BANKING_DOMESTIC_PAYEE).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_DOMESTIC_PAYEE);
     BankingDomesticPayee domestic_payee;
     domestic_payee.deserialize(object);
-    EXPECT_EQ(domestic_payee.payee_account_u_type, PayeeAccountUType::ACCOUNT);
-    EXPECT_STREQ(domestic_payee.account->account_name->c_str(), "string");
-    EXPECT_STREQ(domestic_payee.account->bsb.c_str(), "string");
-    EXPECT_STREQ(domestic_payee.account->account_number.c_str(), "string");
-    EXPECT_STREQ(domestic_payee.card->card_number.c_str(), "string");
-    EXPECT_STREQ(domestic_payee.pay_id->name->c_str(), "string");
-    EXPECT_STREQ(domestic_payee.pay_id->identifier.c_str(), "string");
-    EXPECT_EQ(domestic_payee.pay_id->type, PayIdType::EMAIL);
+    test_domestic_payee_fields(domestic_payee);
 }
 
 TEST(TypeDeserialization, BankingDomesticPayeeAccount)
 {
-    object = parser.parse(BANKING_DOMESTIC_PAYEE_ACCOUNT).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_DOMESTIC_PAYEE_ACCOUNT);
     BankingDomesticPayeeAccount domestic_payee_account;
     domestic_payee_account.deserialize(object);
-    EXPECT_STREQ(domestic_payee_account.account_name->c_str(), "string");
-    EXPECT_STREQ(domestic_payee_account.bsb.c_str(), "string");
-    EXPECT_STREQ(domestic_payee_account.account_number.c_str(), "string");
+    test_domestic_payee_account_fields(domestic_payee_account);
 }
 
 TEST(TypeDeserialization, BankingDomesticPayeeCard)
 {
-    object = parser.parse(BANKING_DOMESTIC_PAYEE_CARD).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_DOMESTIC_PAYEE_CARD);
     BankingDomesticPayeeCard domestic_payee_card;
     domestic_payee_card.deserialize(object);
-    EXPECT_STREQ(domestic_payee_card.card_number.c_str(), "string");
+    test_domestic_payee_card_fields(domestic_payee_card);
 }
 
 TEST(TypeDeserialization, DomesticPayeePayId)
 {
-    object = parser.parse(BANKING_DOMESTIC_PAYEE_PAY_ID).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_DOMESTIC_PAYEE_PAY_ID);
     BankingDomesticPayeePayId domestic_payee_pay_id;
     domestic_payee_pay_id.deserialize(object);
-    EXPECT_STREQ(domestic_payee_pay_id.name->c_str(), "string");
-    EXPECT_STREQ(domestic_payee_pay_id.identifier.c_str(), "string");
-    EXPECT_EQ(domestic_payee_pay_id.type, PayIdType::EMAIL);
+    test_domestic_payee_pay_id_fields(domestic_payee_pay_id);
 }
 
 TEST(TypeDeserialization, BankingBillerPayee)
 {
-    object = parser.parse(BANKING_BILLER_PAYEE).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_BILLER_PAYEE);
     BankingBillerPayee biller_payee;
     biller_payee.deserialize(object);
-    EXPECT_STREQ(biller_payee.biller_code.c_str(), "string");
-    EXPECT_STREQ(biller_payee.crn->c_str(), "string");
-    EXPECT_STREQ(biller_payee.biller_name.c_str(), "string");
+    test_biller_payee_fields(biller_payee);
 }
 
 TEST(TypeDeserialization, BankingInternationalPayee)
 {
-    object = parser.parse(BANKING_INTERNATIONAL_PAYEE).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_INTERNATIONAL_PAYEE);
     BankingInternationalPayee international_payee;
     international_payee.deserialize(object);
-    EXPECT_STREQ(international_payee.beneficiary_details.name->c_str(), "string");
-    EXPECT_STREQ(international_payee.beneficiary_details.country.c_str(), "string");
-    EXPECT_STREQ(international_payee.beneficiary_details.message->c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.country.c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.country.c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.account_number.c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.bank_address.name.c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.bank_address.address.c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.beneficiary_bank_bic->c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.fed_wire_number->c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.sort_code->c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.chip_number->c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.routing_number->c_str(), "string");
-    EXPECT_STREQ(international_payee.bank_details.legal_entity_identifier->c_str(), "string");
+    test_international_payee_fields(international_payee);
 }
 
 TEST(TypeDeserialization, BankingDirectDebit)
 {
-    object = parser.parse(BANKING_DIRECT_DEBIT).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_DIRECT_DEBIT);
     BankingDirectDebit direct_debit;
     direct_debit.deserialize(object);
-    EXPECT_STREQ(direct_debit.account_id.c_str(), "string");
-    EXPECT_STREQ(direct_debit.authorised_entity.description->c_str(), "string");
-    EXPECT_STREQ(direct_debit.authorised_entity.financial_institution->c_str(), "string");
-    EXPECT_STREQ(direct_debit.authorised_entity.abn->c_str(), "string");
-    EXPECT_STREQ(direct_debit.authorised_entity.acn->c_str(), "string");
-    EXPECT_STREQ(direct_debit.authorised_entity.arbn->c_str(), "string");
-    EXPECT_STREQ(direct_debit.last_debit_date_time->c_str(), "string");
-    EXPECT_STREQ(direct_debit.last_debit_amount->c_str(), "string");
+    test_direct_debit_fields(direct_debit);
 }
 
 TEST(TypeDeserialization, BankingAuthorisedEntity)
 {
-    object = parser.parse(BANKING_AUTHORISED_ENTITY).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_AUTHORISED_ENTITY);
     BankingAuthorisedEntity authorised_entity;
     authorised_entity.deserialize(object);
-    EXPECT_STREQ(authorised_entity.description->c_str(), "string");
-    EXPECT_STREQ(authorised_entity.financial_institution->c_str(), "string");
-    EXPECT_STREQ(authorised_entity.abn->c_str(), "string");
-    EXPECT_STREQ(authorised_entity.acn->c_str(), "string");
-    EXPECT_STREQ(authorised_entity.arbn->c_str(), "string");
+    test_authorised_entity_fields(authorised_entity);
 }
 
 TEST(TypeDeserialization, BankingScheduledPayment)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT).extract<Poco::JSON::Object::Ptr>();
-    BankingScheduledPayment scheduled_payment;
-    scheduled_payment.deserialize(object);
-    EXPECT_STREQ(scheduled_payment.scheduled_payment_id.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.nickname->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payer_reference.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.payee_reference.c_str(), "string");
-    EXPECT_EQ(scheduled_payment.status, ScheduledPaymentStatus::ACTIVE);
-    EXPECT_STREQ(scheduled_payment.from.account_id.c_str(), "string");
-    auto payment = scheduled_payment.payment_set[0];
-    EXPECT_EQ(payment.to.to_u_type, ToUType::ACCOUNT_ID);
-    EXPECT_STREQ(payment.to.account_id->c_str(), "string");
-    EXPECT_STREQ(payment.to.payee_id->c_str(), "string");
-    EXPECT_EQ(payment.to.domestic->payee_account_u_type, PayeeAccountUType::ACCOUNT);
-    EXPECT_STREQ(payment.to.domestic->account->account_name->c_str(), "string");
-    EXPECT_STREQ(payment.to.domestic->account->bsb.c_str(), "string");
-    EXPECT_STREQ(payment.to.domestic->account->account_number.c_str(), "string");
-    EXPECT_STREQ(payment.to.domestic->card->card_number.c_str(), "string");
-    EXPECT_STREQ(payment.to.domestic->pay_id->name->c_str(), "string");
-    EXPECT_STREQ(payment.to.domestic->pay_id->identifier.c_str(), "string");
-    EXPECT_EQ(payment.to.domestic->pay_id->type, PayIdType::EMAIL);
-    EXPECT_STREQ(payment.to.biller->biller_code.c_str(), "string");
-    EXPECT_STREQ(payment.to.biller->crn->c_str(), "string");
-    EXPECT_STREQ(payment.to.biller->biller_name.c_str(), "string");
-    EXPECT_STREQ(payment.to.international->beneficiary_details.name->c_str(), "string");
-    EXPECT_STREQ(payment.to.international->beneficiary_details.country.c_str(), "string");
-    EXPECT_STREQ(payment.to.international->beneficiary_details.message->c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.country.c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.account_number.c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.bank_address.name.c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.bank_address.address.c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.beneficiary_bank_bic->c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.fed_wire_number->c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.sort_code->c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.chip_number->c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.routing_number->c_str(), "string");
-    EXPECT_STREQ(payment.to.international->bank_details.legal_entity_identifier->c_str(), "string");
-    EXPECT_EQ(payment.is_amount_calculated, true);
-    EXPECT_STREQ(payment.amount->c_str(), "string");
-    EXPECT_STREQ(payment.currency->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.recurrence.next_payment_date->c_str(), "string");
-    EXPECT_EQ(scheduled_payment.recurrence.recurrence_u_type, RecurrenceUType::ONCE_OFF);
-    EXPECT_STREQ(scheduled_payment.recurrence.once_off->payment_date.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.recurrence.interval_schedule->final_payment_date->c_str(), "string");
-    EXPECT_EQ(scheduled_payment.recurrence.interval_schedule->payments_remaining, 0);
-    EXPECT_EQ(scheduled_payment.recurrence.interval_schedule->non_business_day_treatment, NonBusinessDayTreatment::ON);
-    EXPECT_STREQ(scheduled_payment.recurrence.interval_schedule->intervals[0].interval.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.recurrence.interval_schedule->intervals[0].day_in_interval->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment.recurrence.last_week_day->final_payment_date->c_str(), "string");
-    EXPECT_EQ(scheduled_payment.recurrence.last_week_day->payments_remaining, 0);
-    EXPECT_STREQ(scheduled_payment.recurrence.last_week_day->interval.c_str(), "string");
-    EXPECT_EQ(scheduled_payment.recurrence.last_week_day->last_week_day, LastWeekDay::MON);
-    EXPECT_EQ(scheduled_payment.recurrence.last_week_day->non_business_day_treatment, NonBusinessDayTreatment::ON);
-    EXPECT_STREQ(scheduled_payment.recurrence.event_based->description.c_str(), "string");
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT);
+    BankingScheduledPayment payment;
+    payment.deserialize(object);
+    test_scheduled_payment_fields(payment);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentSet)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_SET).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_SET);
     BankingScheduledPaymentSet scheduled_payment_set;
     scheduled_payment_set.deserialize(object);
-    EXPECT_EQ(scheduled_payment_set.to.to_u_type, ToUType::ACCOUNT_ID);
-    EXPECT_STREQ(scheduled_payment_set.to.account_id->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.payee_id->c_str(), "string");
-    EXPECT_EQ(scheduled_payment_set.to.domestic->payee_account_u_type, PayeeAccountUType::ACCOUNT);
-    EXPECT_STREQ(scheduled_payment_set.to.domestic->account->account_name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.domestic->account->bsb.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.domestic->account->account_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.domestic->card->card_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.domestic->pay_id->name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.domestic->pay_id->identifier.c_str(), "string");
-    EXPECT_EQ(scheduled_payment_set.to.domestic->pay_id->type, PayIdType::EMAIL);
-    EXPECT_STREQ(scheduled_payment_set.to.biller->biller_code.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.biller->crn->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.biller->biller_name.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->beneficiary_details.name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->beneficiary_details.country.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->beneficiary_details.message->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.country.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.account_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.bank_address.name.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.bank_address.address.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.beneficiary_bank_bic->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.fed_wire_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.sort_code->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.chip_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.routing_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.to.international->bank_details.legal_entity_identifier->c_str(), "string");
-    EXPECT_EQ(scheduled_payment_set.is_amount_calculated, true);
-    EXPECT_STREQ(scheduled_payment_set.amount->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_set.currency->c_str(), "string");
+    test_scheduled_payment_set_fields(scheduled_payment_set);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentTo)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_TO).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_TO);
     BankingScheduledPaymentTo scheduled_payment_to;
     scheduled_payment_to.deserialize(object);
-    EXPECT_EQ(scheduled_payment_to.to_u_type, ToUType::ACCOUNT_ID);
-    EXPECT_STREQ(scheduled_payment_to.account_id->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.payee_id->c_str(), "string");
-    EXPECT_EQ(scheduled_payment_to.domestic->payee_account_u_type, PayeeAccountUType::ACCOUNT);
-    EXPECT_STREQ(scheduled_payment_to.domestic->account->account_name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.domestic->account->bsb.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.domestic->account->account_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.domestic->card->card_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.domestic->pay_id->name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.domestic->pay_id->identifier.c_str(), "string");
-    EXPECT_EQ(scheduled_payment_to.domestic->pay_id->type, PayIdType::EMAIL);
-    EXPECT_STREQ(scheduled_payment_to.biller->biller_code.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.biller->crn->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.biller->biller_name.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->beneficiary_details.name->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->beneficiary_details.country.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->beneficiary_details.message->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.country.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.account_number.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.bank_address.name.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.bank_address.address.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.beneficiary_bank_bic->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.fed_wire_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.sort_code->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.chip_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.routing_number->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_to.international->bank_details.legal_entity_identifier->c_str(), "string");
+    test_scheduled_payment_to_fields(scheduled_payment_to);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentFrom)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_FROM).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_FROM);
     BankingScheduledPaymentFrom scheduled_payment_from;
     scheduled_payment_from.deserialize(object);
-    EXPECT_STREQ(scheduled_payment_from.account_id.c_str(), "string");
+    test_scheduled_payment_from_fields(scheduled_payment_from);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentRecurrence)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_RECURRENCE).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_RECURRENCE);
     BankingScheduledPaymentRecurrence scheduled_payment_recurrence;
     scheduled_payment_recurrence.deserialize(object);
-    EXPECT_STREQ(scheduled_payment_recurrence.next_payment_date->c_str(), "string");
-    EXPECT_EQ(scheduled_payment_recurrence.recurrence_u_type, RecurrenceUType::ONCE_OFF);
-    EXPECT_STREQ(scheduled_payment_recurrence.once_off->payment_date.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_recurrence.interval_schedule->final_payment_date->c_str(), "string");
-    EXPECT_EQ(scheduled_payment_recurrence.interval_schedule->payments_remaining, 0);
-    EXPECT_EQ(scheduled_payment_recurrence.interval_schedule->non_business_day_treatment, NonBusinessDayTreatment::ON);
-    EXPECT_STREQ(scheduled_payment_recurrence.interval_schedule->intervals[0].interval.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_recurrence.interval_schedule->intervals[0].day_in_interval->c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_recurrence.last_week_day->final_payment_date->c_str(), "string");
-    EXPECT_EQ(scheduled_payment_recurrence.last_week_day->payments_remaining, 0);
-    EXPECT_STREQ(scheduled_payment_recurrence.last_week_day->interval.c_str(), "string");
-    EXPECT_EQ(scheduled_payment_recurrence.last_week_day->last_week_day, LastWeekDay::MON);
-    EXPECT_EQ(scheduled_payment_recurrence.last_week_day->non_business_day_treatment, NonBusinessDayTreatment::ON);
-    EXPECT_STREQ(scheduled_payment_recurrence.event_based->description.c_str(), "string");
+    test_scheduled_payment_recurrence_fields(scheduled_payment_recurrence);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentRecurrenceOnceOff)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_RECURRENCE_ONCE_OFF).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_RECURRENCE_ONCE_OFF);
     BankingScheduledPaymentRecurrenceOnceOff scheduled_payment_recurrence_once_off;
     scheduled_payment_recurrence_once_off.deserialize(object);
-    EXPECT_STREQ(scheduled_payment_recurrence_once_off.payment_date.c_str(), "string");
+    test_scheduled_payment_recurrence_once_off_fields(scheduled_payment_recurrence_once_off);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentRecurrenceIntervalSchedule)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_RECURRENCE_INTERVAL_SCHEDULE).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_RECURRENCE_INTERVAL_SCHEDULE);
     BankingScheduledPaymentRecurrenceIntervalSchedule scheduled_payment_recurrence_interval_schedule;
     scheduled_payment_recurrence_interval_schedule.deserialize(object);
-    EXPECT_STREQ(scheduled_payment_recurrence_interval_schedule.final_payment_date->c_str(), "string");
-    EXPECT_EQ(scheduled_payment_recurrence_interval_schedule.payments_remaining, 0);
-    EXPECT_EQ(scheduled_payment_recurrence_interval_schedule.non_business_day_treatment, NonBusinessDayTreatment::ON);
-    EXPECT_STREQ(scheduled_payment_recurrence_interval_schedule.intervals[0].interval.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_recurrence_interval_schedule.intervals[0].day_in_interval->c_str(), "string");
+    test_scheduled_payment_recurrence_interval_schedule_fields(scheduled_payment_recurrence_interval_schedule);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentInterval)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_INTERVAL).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_INTERVAL);
     BankingScheduledPaymentInterval scheduled_payment_interval;
     scheduled_payment_interval.deserialize(object);
-    EXPECT_STREQ(scheduled_payment_interval.interval.c_str(), "string");
-    EXPECT_STREQ(scheduled_payment_interval.day_in_interval->c_str(), "string");
+    test_scheduled_payment_interval_fields(scheduled_payment_interval);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentRecurrenceLastWeekday)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_RECURRENCE_LAST_WEEKDAY).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_RECURRENCE_LAST_WEEKDAY);
     BankingScheduledPaymentRecurrenceLastWeekday scheduled_payment_recurrence_last_weekday;
     scheduled_payment_recurrence_last_weekday.deserialize(object);
-    EXPECT_STREQ(scheduled_payment_recurrence_last_weekday.final_payment_date->c_str(), "string");
-    EXPECT_EQ(scheduled_payment_recurrence_last_weekday.payments_remaining, 0);
-    EXPECT_STREQ(scheduled_payment_recurrence_last_weekday.interval.c_str(), "string");
-    EXPECT_EQ(scheduled_payment_recurrence_last_weekday.last_week_day, LastWeekDay::MON);
-    EXPECT_EQ(scheduled_payment_recurrence_last_weekday.non_business_day_treatment, NonBusinessDayTreatment::ON);
+    test_scheduled_payment_recurrence_last_weekday_fields(scheduled_payment_recurrence_last_weekday);
 }
 
 TEST(TypeDeserialization, BankingScheduledPaymentRecurrenceEventBased)
 {
-    object = parser.parse(BANKING_SCHEDULED_PAYMENT_RECURRENCE_EVENT_BASED).extract<Poco::JSON::Object::Ptr>();
+    EXTRACT_OBJECT(object, BANKING_SCHEDULED_PAYMENT_RECURRENCE_EVENT_BASED);
     BankingScheduledPaymentRecurrenceEventBased scheduled_payment_recurrence_event_based;
     scheduled_payment_recurrence_event_based.deserialize(object);
-    EXPECT_STREQ(scheduled_payment_recurrence_event_based.description.c_str(), "string");
+    test_scheduled_payment_recurrence_event_based_fields(scheduled_payment_recurrence_event_based);
 }
 
 TEST(RequestDeserialization, AccountIds)
