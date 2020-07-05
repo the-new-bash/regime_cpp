@@ -6,8 +6,9 @@
 #include "Poco/URI.h"
 #include "../include/regime.hpp"
 
-using namespace Poco;
-using namespace regime::util;
+namespace regime
+{
+    using namespace Poco;
 
 /**
  * @brief Obtain a list of accounts.
@@ -25,45 +26,45 @@ using namespace regime::util;
  *      auto accounts = regime.get_accounts(Bank::ANZ);
  * @endcode
  */
-std::vector<BankingAccount>
-RegimeClient::get_accounts(Bank bank, const std::string &version, std::optional<std::string> min_version,
-                           std::optional<ProductCategory> product_category, std::optional<OpenStatus> open_status,
-                           std::optional<bool> is_owned) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    std::vector<BankingAccount> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingAccount>
+    Client::get_accounts(Bank bank, const std::string &version, std::optional<std::string> min_version,
+                         std::optional<ProductCategory> product_category, std::optional<OpenStatus> open_status,
+                         std::optional<bool> is_owned) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        if (product_category.has_value())
-            uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
-        if (open_status.has_value())
-            uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
-        if (is_owned.has_value())
-            uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        std::vector<BankingAccount> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            if (product_category.has_value())
+                uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
+            if (open_status.has_value())
+                uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
+            if (is_owned.has_value())
+                uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-        ResponseBankingAccountList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.accounts.begin(), resp.data.accounts.end());
-        total_pages = resp.meta.value().total_pages;
+            ResponseBankingAccountList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.accounts.begin(), resp.data.accounts.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain balances for multiple, filtered accounts.
@@ -82,45 +83,45 @@ RegimeClient::get_accounts(Bank bank, const std::string &version, std::optional<
  *      auto bulk_balances = regime.get_bulk_balances(Bank::ANZ);
  * @endcode
  */
-std::vector<BankingBalance>
-RegimeClient::get_bulk_balances(Bank bank, const std::string &version, std::optional<std::string> min_version,
-                                std::optional<ProductCategory> product_category, std::optional<OpenStatus> open_status,
-                                std::optional<bool> is_owned) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/balances"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    std::vector<BankingBalance> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingBalance>
+    Client::get_bulk_balances(Bank bank, const std::string &version, std::optional<std::string> min_version,
+                              std::optional<ProductCategory> product_category, std::optional<OpenStatus> open_status,
+                              std::optional<bool> is_owned) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        if (product_category.has_value())
-            uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
-        if (open_status.has_value())
-            uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
-        if (is_owned.has_value())
-            uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/balances"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        std::vector<BankingBalance> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            if (product_category.has_value())
+                uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
+            if (open_status.has_value())
+                uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
+            if (is_owned.has_value())
+                uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-        ResponseBankingAccountsBalanceList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.balances.begin(), resp.data.balances.end());
-        total_pages = resp.meta.value().total_pages;
+            ResponseBankingAccountsBalanceList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.balances.begin(), resp.data.balances.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain balances for a specified list of accounts.
@@ -137,46 +138,46 @@ RegimeClient::get_bulk_balances(Bank bank, const std::string &version, std::opti
  *      auto balances = regime.get_balances_for_specific_accounts(Bank::ANZ, std::vector<std::string>("1234"));
  * @endcode
  */
-std::vector<BankingBalance>
-RegimeClient::get_balances_for_specific_accounts(Bank bank, const std::vector<std::string> &account_ids,
-                                                 const std::string &version,
-                                                 std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/balances"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    RequestAccountIds body;
-    body.data.account_ids = account_ids;
-    auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
-
-    std::vector<BankingBalance> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingBalance>
+    Client::get_balances_for_specific_accounts(Bank bank, const std::vector<std::string> &account_ids,
+                                               const std::string &version,
+                                               std::optional<std::string> min_version) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/balances"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        RequestAccountIds body;
+        body.data.account_ids = account_ids;
+        auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.setContentType("application/json");
-        req.setContentLength(str_body.length());
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        o << str_body;
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::vector<BankingBalance> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        ResponseBankingAccountsBalanceList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.balances.begin(), resp.data.balances.end());
-        total_pages = resp.meta.value().total_pages;
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.setContentType("application/json");
+            req.setContentLength(str_body.length());
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            o << str_body;
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+
+            ResponseBankingAccountsBalanceList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.balances.begin(), resp.data.balances.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain the balance for a single specified account.
@@ -193,26 +194,26 @@ RegimeClient::get_balances_for_specific_accounts(Bank bank, const std::vector<st
  *      auto account_balance = regime.get_account_balance(Bank::ANZ, "1234");
  * @endcode
  */
-BankingBalance RegimeClient::get_account_balance(Bank bank, const std::string &account_id, const std::string &version,
-                                                 std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/" + account_id + "/balance"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-    req.add("x-v", version);
-    if (min_version.has_value())
-        req.add("x-min-v", min_version.value());
+    BankingBalance Client::get_account_balance(Bank bank, const std::string &account_id, const std::string &version,
+                                               std::optional<std::string> min_version) const
+    {
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/" + account_id + "/balance"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+        req.add("x-v", version);
+        if (min_version.has_value())
+            req.add("x-min-v", min_version.value());
 
-    std::ostream &o = session.sendRequest(req);
-    std::istream &s = session.receiveResponse(res);
-    JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::ostream &o = session.sendRequest(req);
+        std::istream &s = session.receiveResponse(res);
+        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-    ResponseBankingAccountsBalanceById resp;
-    resp.deserialize(ret);
-    return resp.data;
-}
+        ResponseBankingAccountsBalanceById resp;
+        resp.deserialize(ret);
+        return resp.data;
+    }
 
 /**
  * @brief Obtain detailed information on a single account.
@@ -229,27 +230,27 @@ BankingBalance RegimeClient::get_account_balance(Bank bank, const std::string &a
  *      auto account_detail = regime.get_account_detail(Bank::ANZ, "1234");
  * @endcode
  */
-BankingAccountDetail
-RegimeClient::get_account_detail(Bank bank, const std::string &account_id, const std::string &version,
-                                 std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/" + account_id));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-    req.add("x-v", version);
-    if (min_version.has_value())
-        req.add("x-min-v", min_version.value());
+    BankingAccountDetail
+    Client::get_account_detail(Bank bank, const std::string &account_id, const std::string &version,
+                               std::optional<std::string> min_version) const
+    {
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/" + account_id));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+        req.add("x-v", version);
+        if (min_version.has_value())
+            req.add("x-min-v", min_version.value());
 
-    std::ostream &o = session.sendRequest(req);
-    std::istream &s = session.receiveResponse(res);
-    JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::ostream &o = session.sendRequest(req);
+        std::istream &s = session.receiveResponse(res);
+        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-    ResponseBankingAccountById resp;
-    resp.deserialize(ret);
-    return resp.data;
-}
+        ResponseBankingAccountById resp;
+        resp.deserialize(ret);
+        return resp.data;
+    }
 
 /**
  * @brief Obtain transactions for a specific account.
@@ -271,54 +272,54 @@ RegimeClient::get_account_detail(Bank bank, const std::string &account_id, const
  *      auto account_transactions = regime.get_transactions_for_account(Bank::ANZ, "1234");
  * @endcode
  */
-std::vector<BankingTransaction>
-RegimeClient::get_transactions_for_account(Bank bank, const std::string &account_id, const std::string &version,
-                                           std::optional<std::string> min_version,
-                                           std::optional<std::string> oldest_time,
-                                           std::optional<std::string> newest_time,
-                                           std::optional<std::string> min_amount,
-                                           std::optional<std::string> max_amount, std::optional<std::string> text) const
-{
-
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/" + account_id + "/transactions"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-
-    std::vector<BankingTransaction> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingTransaction>
+    Client::get_transactions_for_account(Bank bank, const std::string &account_id, const std::string &version,
+                                         std::optional<std::string> min_version,
+                                         std::optional<std::string> oldest_time,
+                                         std::optional<std::string> newest_time,
+                                         std::optional<std::string> min_amount,
+                                         std::optional<std::string> max_amount, std::optional<std::string> text) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        if (oldest_time.has_value())
-            uri.addQueryParameter("oldest-time", oldest_time.value());
-        if (newest_time.has_value())
-            uri.addQueryParameter("newest-time", newest_time.value());
-        if (min_amount.has_value())
-            uri.addQueryParameter("min-amount", min_amount.value());
-        if (max_amount.has_value())
-            uri.addQueryParameter("max-amount", max_amount.value());
-        if (text.has_value())
-            uri.addQueryParameter("text", text.value());
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/" + account_id + "/transactions"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
 
-        ResponseBankingTransactionList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.transactions.begin(), resp.data.transactions.end());
-        total_pages = resp.meta.value().total_pages;
+        std::vector<BankingTransaction> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            if (oldest_time.has_value())
+                uri.addQueryParameter("oldest-time", oldest_time.value());
+            if (newest_time.has_value())
+                uri.addQueryParameter("newest-time", newest_time.value());
+            if (min_amount.has_value())
+                uri.addQueryParameter("min-amount", min_amount.value());
+            if (max_amount.has_value())
+                uri.addQueryParameter("max-amount", max_amount.value());
+            if (text.has_value())
+                uri.addQueryParameter("text", text.value());
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+
+            ResponseBankingTransactionList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.transactions.begin(), resp.data.transactions.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain detailed information on a transaction for a specific account.
@@ -336,27 +337,27 @@ RegimeClient::get_transactions_for_account(Bank bank, const std::string &account
  *      auto transaction_detail = regime.get_transaction_detail(Bank::ANZ, "1234", "5678");
  * @endcode
  */
-BankingTransactionDetail
-RegimeClient::get_transaction_detail(Bank bank, const std::string &account_id, const std::string &transaction_id,
-                                     const std::string &version, std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/" + account_id + "/transactions/" + transaction_id));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-    req.add("x-v", version);
-    if (min_version.has_value())
-        req.add("x-min-v", min_version.value());
+    BankingTransactionDetail
+    Client::get_transaction_detail(Bank bank, const std::string &account_id, const std::string &transaction_id,
+                                   const std::string &version, std::optional<std::string> min_version) const
+    {
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/" + account_id + "/transactions/" + transaction_id));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+        req.add("x-v", version);
+        if (min_version.has_value())
+            req.add("x-min-v", min_version.value());
 
-    std::ostream &o = session.sendRequest(req);
-    std::istream &s = session.receiveResponse(res);
-    JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::ostream &o = session.sendRequest(req);
+        std::istream &s = session.receiveResponse(res);
+        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-    ResponseBankingTransactionById resp;
-    resp.deserialize(ret);
-    return resp.data;
-}
+        ResponseBankingTransactionById resp;
+        resp.deserialize(ret);
+        return resp.data;
+    }
 
 /**
  * @brief Obtain direct debit authorisations for a specific account.
@@ -373,42 +374,42 @@ RegimeClient::get_transaction_detail(Bank bank, const std::string &account_id, c
  *      auto direct_debits = regime.get_direct_debits_for_account(bank::anz, "1234");
  * @endcode
  */
-std::vector<BankingDirectDebit>
-RegimeClient::get_direct_debits_for_account(Bank bank, const std::string &account_id, const std::string &version,
-                                            std::optional<std::string> min_version) const
-{
-
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/" + account_id + "/direct-debits"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-
-    std::vector<BankingDirectDebit> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingDirectDebit>
+    Client::get_direct_debits_for_account(Bank bank, const std::string &account_id, const std::string &version,
+                                          std::optional<std::string> min_version) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/" + account_id + "/direct-debits"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
 
-        ResponseBankingDirectDebitAuthorisationList resp;
-        resp.deserialize(ret);
-        result.insert(
-                result.end(), resp.data.direct_debit_authorisations.begin(),
-                resp.data.direct_debit_authorisations.end());
-        total_pages = resp.meta.value().total_pages;
+        std::vector<BankingDirectDebit> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+
+            ResponseBankingDirectDebitAuthorisationList resp;
+            resp.deserialize(ret);
+            result.insert(
+                    result.end(), resp.data.direct_debit_authorisations.begin(),
+                    resp.data.direct_debit_authorisations.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain direct debit authorisations for multiple, filtered accounts.
@@ -427,49 +428,49 @@ RegimeClient::get_direct_debits_for_account(Bank bank, const std::string &accoun
  *      auto bulk_direct_debits = regime.get_bulk_direct_debits(Bank::ANZ, "1234");
  * @endcode
  */
-std::vector<BankingDirectDebit>
-RegimeClient::get_bulk_direct_debits(Bank bank, const std::string &version, std::optional<std::string> min_version,
-                                     std::optional<ProductCategory> product_category,
-                                     std::optional<OpenStatus> open_status,
-                                     std::optional<bool> is_owned) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/direct-debits"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-
-    std::vector<BankingDirectDebit> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingDirectDebit>
+    Client::get_bulk_direct_debits(Bank bank, const std::string &version, std::optional<std::string> min_version,
+                                   std::optional<ProductCategory> product_category,
+                                   std::optional<OpenStatus> open_status,
+                                   std::optional<bool> is_owned) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        if (product_category.has_value())
-            uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
-        if (open_status.has_value())
-            uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
-        if (is_owned.has_value())
-            uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/direct-debits"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::vector<BankingDirectDebit> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            if (product_category.has_value())
+                uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
+            if (open_status.has_value())
+                uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
+            if (is_owned.has_value())
+                uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        ResponseBankingDirectDebitAuthorisationList resp;
-        resp.deserialize(ret);
-        result.insert(
-                result.end(), resp.data.direct_debit_authorisations.begin(),
-                resp.data.direct_debit_authorisations.end());
-        total_pages = resp.meta.value().total_pages;
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+
+            ResponseBankingDirectDebitAuthorisationList resp;
+            resp.deserialize(ret);
+            result.insert(
+                    result.end(), resp.data.direct_debit_authorisations.begin(),
+                    resp.data.direct_debit_authorisations.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain direct debit authorisations for a specified list of accounts.
@@ -486,48 +487,48 @@ RegimeClient::get_bulk_direct_debits(Bank bank, const std::string &version, std:
  *      auto accounts_direct_debits = regime.get_direct_debits_for_specific_accounts(Bank::ANZ, std::vector<std::string>("1234"));
  * @endcode
  */
-std::vector<BankingDirectDebit>
-RegimeClient::get_direct_debits_for_specific_accounts(Bank bank, const std::vector<std::string> &account_ids,
-                                                      const std::string &version,
-                                                      std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/direct-debits"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    RequestAccountIds body;
-    body.data.account_ids = account_ids;
-    auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
-
-    std::vector<BankingDirectDebit> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingDirectDebit>
+    Client::get_direct_debits_for_specific_accounts(Bank bank, const std::vector<std::string> &account_ids,
+                                                    const std::string &version,
+                                                    std::optional<std::string> min_version) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/direct-debits"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        RequestAccountIds body;
+        body.data.account_ids = account_ids;
+        auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.setContentType("application/json");
-        req.setContentLength(str_body.length());
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        o << str_body;
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::vector<BankingDirectDebit> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        ResponseBankingDirectDebitAuthorisationList resp;
-        resp.deserialize(ret);
-        result.insert(
-                result.end(), resp.data.direct_debit_authorisations.begin(),
-                resp.data.direct_debit_authorisations.end());
-        total_pages = resp.meta.value().total_pages;
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.setContentType("application/json");
+            req.setContentLength(str_body.length());
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            o << str_body;
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+
+            ResponseBankingDirectDebitAuthorisationList resp;
+            resp.deserialize(ret);
+            result.insert(
+                    result.end(), resp.data.direct_debit_authorisations.begin(),
+                    resp.data.direct_debit_authorisations.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain scheduled, outgoing payments for a specific account.
@@ -544,39 +545,39 @@ RegimeClient::get_direct_debits_for_specific_accounts(Bank bank, const std::vect
  *      auto outgoing_payments = regime.get_scheduled_payments_for_account(Bank::ANZ, "1234");
  * @endcode
  */
-std::vector<BankingScheduledPayment>
-RegimeClient::get_scheduled_payments_for_account(Bank bank, const std::string &account_id, const std::string &version,
-                                                 std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "accounts/" + account_id + "/payments/scheduled"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-
-    std::vector<BankingScheduledPayment> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingScheduledPayment>
+    Client::get_scheduled_payments_for_account(Bank bank, const std::string &account_id, const std::string &version,
+                                               std::optional<std::string> min_version) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "accounts/" + account_id + "/payments/scheduled"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::vector<BankingScheduledPayment> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        ResponseBankingScheduledPaymentsList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
-        total_pages = resp.meta.value().total_pages;
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+
+            ResponseBankingScheduledPaymentsList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain scheduled payments for multiple, filtered accounts that are the source of funds for the payments.
@@ -595,45 +596,45 @@ RegimeClient::get_scheduled_payments_for_account(Bank bank, const std::string &a
  *      auto bulk_outgoing_payments = regime.get_scheduled_payments_bulk(Bank::ANZ);
  * @endcode
  */
-std::vector<BankingScheduledPayment>
-RegimeClient::get_scheduled_payments_bulk(Bank bank, const std::string &version, std::optional<std::string> min_version,
-                                          std::optional<ProductCategory> product_category,
-                                          std::optional<OpenStatus> open_status, std::optional<bool> is_owned) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "payments/scheduled"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    std::vector<BankingScheduledPayment> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingScheduledPayment>
+    Client::get_scheduled_payments_bulk(Bank bank, const std::string &version, std::optional<std::string> min_version,
+                                        std::optional<ProductCategory> product_category,
+                                        std::optional<OpenStatus> open_status, std::optional<bool> is_owned) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        if (product_category.has_value())
-            uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
-        if (open_status.has_value())
-            uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
-        if (is_owned.has_value())
-            uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "payments/scheduled"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        std::vector<BankingScheduledPayment> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            if (product_category.has_value())
+                uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
+            if (open_status.has_value())
+                uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
+            if (is_owned.has_value())
+                uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-        ResponseBankingScheduledPaymentsList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
-        total_pages = resp.meta.value().total_pages;
+            ResponseBankingScheduledPaymentsList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain scheduled payments for a specified list of accounts.
@@ -650,46 +651,46 @@ RegimeClient::get_scheduled_payments_bulk(Bank bank, const std::string &version,
  *      auto account_outgoing_payments = regime.get_scheduled_payments_for_specific_accounts(Bank::ANZ, std::vector<std::string>("1234"));
  * @endcode
  */
-std::vector<BankingScheduledPayment>
-RegimeClient::get_scheduled_payments_for_specific_accounts(Bank bank, const std::vector<std::string> &account_ids,
-                                                           const std::string &version,
-                                                           std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "payments/scheduled"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    RequestAccountIds body;
-    body.data.account_ids = account_ids;
-    auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
-
-    std::vector<BankingScheduledPayment> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingScheduledPayment>
+    Client::get_scheduled_payments_for_specific_accounts(Bank bank, const std::vector<std::string> &account_ids,
+                                                         const std::string &version,
+                                                         std::optional<std::string> min_version) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "payments/scheduled"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        RequestAccountIds body;
+        body.data.account_ids = account_ids;
+        auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.setContentType("application/json");
-        req.setContentLength(str_body.length());
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        o << str_body;
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::vector<BankingScheduledPayment> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        ResponseBankingScheduledPaymentsList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
-        total_pages = resp.meta.value().total_pages;
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.setContentType("application/json");
+            req.setContentLength(str_body.length());
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            o << str_body;
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+
+            ResponseBankingScheduledPaymentsList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain a list of pre-registered payees.
@@ -706,40 +707,40 @@ RegimeClient::get_scheduled_payments_for_specific_accounts(Bank bank, const std:
  *      auto payees = regime.get_payees(Bank::ANZ);
  * @endcode
  */
-std::vector<BankingPayee>
-RegimeClient::get_payees(Bank bank, const std::string &version, std::optional<std::string> min_version,
-                         std::optional<PayeeType> type) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "payees"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    std::vector<BankingPayee> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingPayee>
+    Client::get_payees(Bank bank, const std::string &version, std::optional<std::string> min_version,
+                       std::optional<PayeeType> type) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        if (type.has_value())
-            uri.addQueryParameter("type", get_string(PayeeTypes, type.value()));
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "payees"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        std::vector<BankingPayee> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            if (type.has_value())
+                uri.addQueryParameter("type", get_string(PayeeTypes, type.value()));
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-        ResponseBankingPayeeList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.payees.begin(), resp.data.payees.end());
-        total_pages = resp.meta.value().total_pages;
+            ResponseBankingPayeeList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.payees.begin(), resp.data.payees.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain detailed information on a single payee.
@@ -756,26 +757,26 @@ RegimeClient::get_payees(Bank bank, const std::string &version, std::optional<st
  *      auto payee_detail = regime.get_payee_detail(Bank::ANZ, "1234");
  * @endcode
  */
-BankingPayeeDetail RegimeClient::get_payee_detail(Bank bank, const std::string &payee_id, const std::string &version,
-                                                  std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "payees/" + payee_id));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-    req.add("x-v", version);
-    if (min_version.has_value())
-        req.add("x-min-v", min_version.value());
+    BankingPayeeDetail Client::get_payee_detail(Bank bank, const std::string &payee_id, const std::string &version,
+                                                std::optional<std::string> min_version) const
+    {
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "payees/" + payee_id));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+        req.add("x-v", version);
+        if (min_version.has_value())
+            req.add("x-min-v", min_version.value());
 
-    std::ostream &o = session.sendRequest(req);
-    std::istream &s = session.receiveResponse(res);
-    JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::ostream &o = session.sendRequest(req);
+        std::istream &s = session.receiveResponse(res);
+        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-    ResponseBankingPayeeById resp;
-    resp.deserialize(ret);
-    return resp.data;
-}
+        ResponseBankingPayeeById resp;
+        resp.deserialize(ret);
+        return resp.data;
+    }
 
 /**
  * @brief Obtain a list of products that are currently openly offered to the market.
@@ -795,52 +796,52 @@ BankingPayeeDetail RegimeClient::get_payee_detail(Bank bank, const std::string &
  *      auto products = regime.get_products(Bank::ANZ);
  * @endcode
  */
-std::vector<BankingProductV2> RegimeClient::get_products(Bank bank,
-                                                         const std::string &version,
-                                                         std::optional<std::string> min_version,
-                                                         std::optional<Effective> effective,
-                                                         std::optional<DateTime> updated_since,
-                                                         std::optional<std::string> brand,
-                                                         std::optional<ProductCategory> product_category) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "products"));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    std::vector<BankingProductV2> result;
-    unsigned int page = 1, total_pages;
-    do
+    std::vector<BankingProductV2> Client::get_products(Bank bank,
+                                                       const std::string &version,
+                                                       std::optional<std::string> min_version,
+                                                       std::optional<Effective> effective,
+                                                       std::optional<DateTime> updated_since,
+                                                       std::optional<std::string> brand,
+                                                       std::optional<ProductCategory> product_category) const
     {
-        uri.setQuery("");  // need to clear query for new pages
-        if (effective.has_value())
-            uri.addQueryParameter("effective", get_string(EffectiveFields, effective.value()));
-        if (updated_since.has_value())
-            uri.addQueryParameter(
-                    "updated-since",
-                    DateTimeFormatter::format(updated_since.value(), DateTimeFormat::ISO8601_FORMAT));
-        if (brand.has_value())
-            uri.addQueryParameter("brand", brand.value());
-        if (product_category.has_value())
-            uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
-        uri.addQueryParameter("page", std::to_string(page));
-        uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "products"));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        std::vector<BankingProductV2> result;
+        unsigned int page = 1, total_pages;
+        do
+        {
+            uri.setQuery("");  // need to clear query for new pages
+            if (effective.has_value())
+                uri.addQueryParameter("effective", get_string(EffectiveFields, effective.value()));
+            if (updated_since.has_value())
+                uri.addQueryParameter(
+                        "updated-since",
+                        DateTimeFormatter::format(updated_since.value(), DateTimeFormat::ISO8601_FORMAT));
+            if (brand.has_value())
+                uri.addQueryParameter("brand", brand.value());
+            if (product_category.has_value())
+                uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
+            uri.addQueryParameter("page", std::to_string(page));
+            uri.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
 
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        std::istream &s = session.receiveResponse(res);
-        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+            Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+            req.add("x-v", version);
+            if (min_version.has_value())
+                req.add("x-min-v", min_version.value());
+            std::ostream &o = session.sendRequest(req);
+            std::istream &s = session.receiveResponse(res);
+            JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-        ResponseBankingProductList resp;
-        resp.deserialize(ret);
-        result.insert(result.end(), resp.data.products.begin(), resp.data.products.end());
-        total_pages = resp.meta.value().total_pages;
+            ResponseBankingProductList resp;
+            resp.deserialize(ret);
+            result.insert(result.end(), resp.data.products.begin(), resp.data.products.end());
+            total_pages = resp.meta.value().total_pages;
+        }
+        while (++page <= total_pages);
+        return result;
     }
-    while (++page <= total_pages);
-    return result;
-}
 
 /**
  * @brief Obtain detailed information on a single product offered openly to the market.
@@ -857,37 +858,38 @@ std::vector<BankingProductV2> RegimeClient::get_products(Bank bank,
  *      auto product_details = regime.get_product_details(Bank::ANZ, "8123haf-1237fa-123jaj");
  * @endcode
  */
-BankingProductDetail RegimeClient::get_product_details(Bank bank,
-                                                       const std::string &product_id,
-                                                       const std::string &version,
-                                                       std::optional<std::string> min_version) const
-{
-    Net::HTTPResponse res;
-    JSON::Parser parser;
-    URI uri(get_uri(bank, "products/" + product_id));
-    Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-    Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-    req.add("x-v", version);
-    if (min_version.has_value())
-        req.add("x-min-v", min_version.value());
+    BankingProductDetail Client::get_product_details(Bank bank,
+                                                     const std::string &product_id,
+                                                     const std::string &version,
+                                                     std::optional<std::string> min_version) const
+    {
+        Net::HTTPResponse res;
+        JSON::Parser parser;
+        URI uri(get_uri(bank, "products/" + product_id));
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
+        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
+        req.add("x-v", version);
+        if (min_version.has_value())
+            req.add("x-min-v", min_version.value());
 
-    std::ostream &o = session.sendRequest(req);
-    std::istream &s = session.receiveResponse(res);
-    JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
+        std::ostream &o = session.sendRequest(req);
+        std::istream &s = session.receiveResponse(res);
+        JSON::Object::Ptr ret = parser.parse(s).extract<JSON::Object::Ptr>();
 
-    ResponseBankingProductById resp;
-    resp.deserialize(ret);
-    return resp.data;
-}
+        ResponseBankingProductById resp;
+        resp.deserialize(ret);
+        return resp.data;
+    }
 
-std::string RegimeClient::get_uri(Bank bank, const std::string &resource) const
-{
-    std::ostringstream stream;
-    stream << "https://"
-           << get_string(Banks, bank)
-           << "/cds-au/v"
-           << std::to_string(_version)
-           << "/banking/"
-           << resource;
-    return stream.str();
+    std::string Client::get_uri(Bank bank, const std::string &resource) const
+    {
+        std::ostringstream stream;
+        stream << "https://"
+               << get_string(Banks, bank)
+               << "/cds-au/v"
+               << std::to_string(_version)
+               << "/banking/"
+               << resource;
+        return stream.str();
+    }
 }

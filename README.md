@@ -44,7 +44,7 @@ class Consumer(ConanFile):
 
 int main()
 {    
-    RegimeClient client(1);
+    regime::Client client(1);
     auto products = client.get_products(Bank::ANZ);
     auto details = client.get_product_details(Bank::ANZ, products[0].product_id);
 }

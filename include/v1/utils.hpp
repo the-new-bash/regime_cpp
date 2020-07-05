@@ -3,9 +3,11 @@
 
 #include <charconv>
 #include <type_traits>
+#include <algorithm>
 #include "types.hpp"
+#include "objects.hpp"
 
-namespace regime::util
+namespace regime::v1
 {
     template<typename Test, template<typename...> class Ref>
     struct is_specialization : std::false_type

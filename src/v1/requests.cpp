@@ -1,30 +1,28 @@
 
-#include <v1/common/requests.hpp>
+#include <v1/requests.hpp>
 
 #include "../../include/v1/requests.hpp"
 
-void RequestAccountIds::deserialize(const Poco::JSON::Object::Ptr &payload)
+namespace regime::v1
 {
-    const auto[_data, _meta] = parse_request(payload);
-    data.deserialize(_data);
-    meta.value().deserialize(_meta);
-}
+    std::tuple<obj, obj> parse_request(const Poco::JSON::Object::Ptr &payload)
+    {
+        const auto data = payload->getObject("data");
+        Poco::JSON::Object::Ptr meta;
+        if (payload->has("meta"))
+            meta = payload->getObject("meta");
+        return std::make_tuple(data, meta);
+    }
 
-Poco::JSON::Object::Ptr RequestAccountIds::to_json() const
-{
-    Poco::JSON::Object::Ptr json;
-    regime::util::add(json, "accountIds", data.account_ids);
-    return json;
-}
+    void AccountIds::deserialize(const Poco::JSON::Object::Ptr &payload)
+    {
+        get(account_ids, payload, "accountIds");
+    }
 
-void AccountIds::deserialize(const Poco::JSON::Object::Ptr &payload)
-{
-    regime::util::get(account_ids, payload, "accountIds");
-}
-
-Poco::JSON::Object::Ptr AccountIds::to_json() const
-{
-    Poco::JSON::Object::Ptr json;
-    regime::util::add(json, "accountIds", account_ids);
-    return json;
+    Poco::JSON::Object::Ptr AccountIds::to_json() const
+    {
+        Poco::JSON::Object::Ptr json;
+        add(json, "accountIds", account_ids);
+        return json;
+    }
 }
