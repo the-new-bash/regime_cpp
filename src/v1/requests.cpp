@@ -5,15 +5,15 @@
 
 void RequestAccountIds::deserialize(const Poco::JSON::Object::Ptr &payload)
 {
-    const auto resp = Request::parse(payload);
-    auto *_data = static_cast<AccountIds *>(data.get());
-    _data->deserialize(std::get<0>(resp));
+    const auto[_data, _meta] = parse_request(payload);
+    data.deserialize(_data);
+    meta.value().deserialize(_meta);
 }
 
 Poco::JSON::Object::Ptr RequestAccountIds::to_json() const
 {
     Poco::JSON::Object::Ptr json;
-    regime::util::add(json, "accountIds", static_cast<AccountIds *>(data.get())->account_ids);
+    regime::util::add(json, "accountIds", data.account_ids);
     return json;
 }
 

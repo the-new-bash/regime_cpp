@@ -41,12 +41,12 @@ namespace regime::util
             throw;  // TODO
     }
 
-    template<class T, std::enable_if_t<std::is_base_of<Object, T>::value ||
+    template<class T, std::enable_if_t<std::is_base_of<IObject, T>::value ||
                                        std::is_arithmetic<T>::value ||
                                        std::is_same<T, std::string>::value> * = nullptr>
     void add(Poco::JSON::Object::Ptr &obj, const std::string &key, const T &t)
     {
-        if constexpr (std::is_base_of<Object, T>::value)
+        if constexpr (std::is_base_of<IObject, T>::value)
             obj->set(key, t.to_json());
         else
             obj->set(key, t);
@@ -65,7 +65,7 @@ namespace regime::util
         Poco::JSON::Array arr;
         for (const auto &e : t)
         {
-            if constexpr (std::is_base_of<Object, T>::value)
+            if constexpr (std::is_base_of<IObject, T>::value)
                 arr.add(e.to_json());
             else
                 arr.add(e);
@@ -94,12 +94,12 @@ namespace regime::util
         obj->set(key, get_string(m, t));
     }
 
-    template<class T, std::enable_if_t<std::is_base_of<Object, T>::value ||
+    template<class T, std::enable_if_t<std::is_base_of<IObject, T>::value ||
                                        std::is_arithmetic<T>::value ||
                                        std::is_same<T, std::string>::value> * = nullptr>
     void get(T &t, const Poco::JSON::Object::Ptr &data, const std::string &key)
     {
-        if constexpr (std::is_base_of<Object, T>::value)
+        if constexpr (std::is_base_of<IObject, T>::value)
         {
             T tmp;
             tmp.deserialize(data->getObject(key));
@@ -127,7 +127,7 @@ namespace regime::util
     {
         for (const auto &it: *data->getArray(key))
         {
-            if constexpr (std::is_base_of<Object, T>::value)
+            if constexpr (std::is_base_of<IObject, T>::value)
             {
                 T tmp;
                 tmp.deserialize(it.extract<Poco::JSON::Object::Ptr>());

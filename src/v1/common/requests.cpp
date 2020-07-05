@@ -1,6 +1,6 @@
 #include <v1/requests.hpp>
 
-std::tuple<obj, obj> Request::parse(const Poco::JSON::Object::Ptr &payload)
+std::tuple<obj, obj> parse_request(const Poco::JSON::Object::Ptr &payload)
 {
     const auto data = payload->getObject("data");
     Poco::JSON::Object::Ptr meta;

@@ -242,7 +242,7 @@ Poco::JSON::Object::Ptr CommonOrganisationDetail::to_json() const
     return json;
 }
 
-std::string Object::serialize() const
+std::string IObject::serialize() const
 {
     const auto obj = to_json();
     std::ostringstream oss;
