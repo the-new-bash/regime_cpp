@@ -5,26 +5,26 @@
 
 void RequestAccountIds::deserialize(const Poco::JSON::Object::Ptr &payload)
 {
-    const auto resp = Request::parse(payload);
-    auto *_data = static_cast<AccountIds *>(data.get());
-    _data->deserialize(std::get<0>(resp));
+    const auto[_data, _meta] = parse_request(payload);
+    data.deserialize(_data);
+    meta.value().deserialize(_meta);
 }
 
 Poco::JSON::Object::Ptr RequestAccountIds::to_json() const
 {
     Poco::JSON::Object::Ptr json;
-    regime::util::add(json, "accountIds", static_cast<AccountIds *>(data.get())->ids);
+    regime::util::add(json, "accountIds", data.account_ids);
     return json;
 }
 
 void AccountIds::deserialize(const Poco::JSON::Object::Ptr &payload)
 {
-    regime::util::get(ids, payload, "accountIds");
+    regime::util::get(account_ids, payload, "accountIds");
 }
 
 Poco::JSON::Object::Ptr AccountIds::to_json() const
 {
     Poco::JSON::Object::Ptr json;
-    regime::util::add(json, "accountIds", ids);
+    regime::util::add(json, "accountIds", account_ids);
     return json;
 }

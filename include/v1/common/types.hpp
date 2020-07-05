@@ -5,7 +5,7 @@
 #include "objects.hpp"
 
 #define DECLARE_COMMON_TYPE(type_name, ...) \
-        struct type_name : public Object \
+        struct type_name : public IObject \
         { \
             ~type_name() = default; \
             void deserialize(const Poco::JSON::Object::Ptr &payload) override; \

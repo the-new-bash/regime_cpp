@@ -58,10 +58,8 @@ RegimeClient::get_accounts(Bank bank, const std::string &version, std::optional<
 
         ResponseBankingAccountList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingAccountList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->accounts.begin(), data->accounts.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.accounts.begin(), resp.data.accounts.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -117,10 +115,8 @@ RegimeClient::get_bulk_balances(Bank bank, const std::string &version, std::opti
 
         ResponseBankingAccountsBalanceList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingAccountsBalanceList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->balances.begin(), data->balances.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.balances.begin(), resp.data.balances.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -151,7 +147,7 @@ RegimeClient::get_balances_for_specific_accounts(Bank bank, const std::vector<st
     URI uri(get_uri(bank, "accounts/balances"));
     Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
     RequestAccountIds body;
-    static_cast<AccountIds *>(body.data.get())->ids = account_ids;
+    body.data.account_ids = account_ids;
     auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
     std::vector<BankingBalance> result;
@@ -175,10 +171,8 @@ RegimeClient::get_balances_for_specific_accounts(Bank bank, const std::vector<st
 
         ResponseBankingAccountsBalanceList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingAccountsBalanceList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->balances.begin(), data->balances.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.balances.begin(), resp.data.balances.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -217,8 +211,7 @@ BankingBalance RegimeClient::get_account_balance(Bank bank, const std::string &a
 
     ResponseBankingAccountsBalanceById resp;
     resp.deserialize(ret);
-    auto *data = static_cast<BankingAccountsBalanceById *>(resp.data.get());
-    return data->balance;
+    return resp.data;
 }
 
 /**
@@ -255,8 +248,7 @@ RegimeClient::get_account_detail(Bank bank, const std::string &account_id, const
 
     ResponseBankingAccountById resp;
     resp.deserialize(ret);
-    auto *data = static_cast<BankingAccountById *>(resp.data.get());
-    return data->account_detail;
+    return resp.data;
 }
 
 /**
@@ -321,10 +313,8 @@ RegimeClient::get_transactions_for_account(Bank bank, const std::string &account
 
         ResponseBankingTransactionList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingTransactionList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->transactions.begin(), data->transactions.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.transactions.begin(), resp.data.transactions.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -365,8 +355,7 @@ RegimeClient::get_transaction_detail(Bank bank, const std::string &account_id, c
 
     ResponseBankingTransactionById resp;
     resp.deserialize(ret);
-    auto *data = static_cast<BankingTransactionById *>(resp.data.get());
-    return data->transaction_detail;
+    return resp.data;
 }
 
 /**
@@ -412,10 +401,10 @@ RegimeClient::get_direct_debits_for_account(Bank bank, const std::string &accoun
 
         ResponseBankingDirectDebitAuthorisationList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingDirectDebitAuthorisationList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->direct_debit_authorisations.begin(), data->direct_debit_authorisations.end());
-        total_pages = meta->total_pages;
+        result.insert(
+                result.end(), resp.data.direct_debit_authorisations.begin(),
+                resp.data.direct_debit_authorisations.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -473,10 +462,10 @@ RegimeClient::get_bulk_direct_debits(Bank bank, const std::string &version, std:
 
         ResponseBankingDirectDebitAuthorisationList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingDirectDebitAuthorisationList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->direct_debit_authorisations.begin(), data->direct_debit_authorisations.end());
-        total_pages = meta->total_pages;
+        result.insert(
+                result.end(), resp.data.direct_debit_authorisations.begin(),
+                resp.data.direct_debit_authorisations.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -507,7 +496,7 @@ RegimeClient::get_direct_debits_for_specific_accounts(Bank bank, const std::vect
     URI uri(get_uri(bank, "accounts/direct-debits"));
     Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
     RequestAccountIds body;
-    static_cast<AccountIds *>(body.data.get())->ids = account_ids;
+    body.data.account_ids = account_ids;
     auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
     std::vector<BankingDirectDebit> result;
@@ -531,10 +520,10 @@ RegimeClient::get_direct_debits_for_specific_accounts(Bank bank, const std::vect
 
         ResponseBankingDirectDebitAuthorisationList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingDirectDebitAuthorisationList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->direct_debit_authorisations.begin(), data->direct_debit_authorisations.end());
-        total_pages = meta->total_pages;
+        result.insert(
+                result.end(), resp.data.direct_debit_authorisations.begin(),
+                resp.data.direct_debit_authorisations.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -582,10 +571,8 @@ RegimeClient::get_scheduled_payments_for_account(Bank bank, const std::string &a
 
         ResponseBankingScheduledPaymentsList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingScheduledPaymentsList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->scheduled_payments.begin(), data->scheduled_payments.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -641,10 +628,8 @@ RegimeClient::get_scheduled_payments_bulk(Bank bank, const std::string &version,
 
         ResponseBankingScheduledPaymentsList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingScheduledPaymentsList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->scheduled_payments.begin(), data->scheduled_payments.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -675,7 +660,7 @@ RegimeClient::get_scheduled_payments_for_specific_accounts(Bank bank, const std:
     URI uri(get_uri(bank, "payments/scheduled"));
     Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
     RequestAccountIds body;
-    static_cast<AccountIds *>(body.data.get())->ids = account_ids;
+    body.data.account_ids = account_ids;
     auto str_body = static_cast<Poco::DynamicStruct>(*body.to_json()).toString();
 
     std::vector<BankingScheduledPayment> result;
@@ -699,10 +684,8 @@ RegimeClient::get_scheduled_payments_for_specific_accounts(Bank bank, const std:
 
         ResponseBankingScheduledPaymentsList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingScheduledPaymentsList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->scheduled_payments.begin(), data->scheduled_payments.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -751,10 +734,8 @@ RegimeClient::get_payees(Bank bank, const std::string &version, std::optional<st
 
         ResponseBankingPayeeList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingPayeeList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->payees.begin(), data->payees.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.payees.begin(), resp.data.payees.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -793,8 +774,7 @@ BankingPayeeDetail RegimeClient::get_payee_detail(Bank bank, const std::string &
 
     ResponseBankingPayeeById resp;
     resp.deserialize(ret);
-    auto *data = static_cast<BankingPayeeById *>(resp.data.get());
-    return data->payee_detail;
+    return resp.data;
 }
 
 /**
@@ -855,10 +835,8 @@ std::vector<BankingProductV2> RegimeClient::get_products(Bank bank,
 
         ResponseBankingProductList resp;
         resp.deserialize(ret);
-        auto *data = static_cast<BankingProductList *>(resp.data.get());
-        auto *meta = static_cast<MetaPaginated *>(resp.meta.value().get());
-        result.insert(result.end(), data->products.begin(), data->products.end());
-        total_pages = meta->total_pages;
+        result.insert(result.end(), resp.data.products.begin(), resp.data.products.end());
+        total_pages = resp.meta.value().total_pages;
     }
     while (++page <= total_pages);
     return result;
@@ -899,8 +877,7 @@ BankingProductDetail RegimeClient::get_product_details(Bank bank,
 
     ResponseBankingProductById resp;
     resp.deserialize(ret);
-    auto *data = static_cast<BankingProductById *>(resp.data.get());
-    return data->product_detail;
+    return resp.data;
 }
 
 std::string RegimeClient::get_uri(Bank bank, const std::string &resource) const
