@@ -1,8 +1,9 @@
 # regime_cpp
+> Australian Open Banking C++17 client.
+
 [![the-new-bash](https://circleci.com/gh/the-new-bash/regime_cpp.svg?style=shield&circle-token=67c684a2743ce81c93b94d5f99829ec8a48bf5b6)](https://app.circleci.com/pipelines/github/the-new-bash/regime_cpp)
 [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=the-new-bash_regime_cpp&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=the-new-bash_regime_cpp)
 
-Australian Open Banking API C++17 client.
 
 ## Getting Started
 
