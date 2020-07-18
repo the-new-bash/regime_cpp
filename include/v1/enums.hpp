@@ -2,6 +2,7 @@
 #define REGIME_V1_ENUMS_HPP
 
 #include <array>
+#include <string>
 #include "utils.hpp"
 
 namespace regime::v1
