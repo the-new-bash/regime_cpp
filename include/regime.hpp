@@ -8,6 +8,24 @@ namespace regime
 {
     using namespace v1;
 
+    enum class Bank
+    {
+        ANZ,
+        CBA,
+        NAB,
+        WBC,
+    };
+
+    const std::array<const EnumStringPair <Bank>, 4> Banks
+            {
+                    {
+                            {Bank::ANZ, "api.anz"},
+                            {Bank::CBA, "api.commbank.com.au"},
+                            {Bank::NAB, "openbank.api.nab.com.au"},
+                            {Bank::WBC, "digital-api.westpac.com.au"}
+                    }
+            };
+
     class Client
     {
     public:

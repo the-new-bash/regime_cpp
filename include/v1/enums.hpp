@@ -15,14 +15,6 @@ namespace regime::v1
         std::string _string;
     };
 
-    enum class Bank
-    {
-        ANZ,
-        CBA,
-        NAB,
-        WBC,
-    };
-
     enum class AddressUType
     {
         SIMPLE,
@@ -350,16 +342,6 @@ namespace regime::v1
         SAT,
         SUN
     };
-
-    const std::array<const EnumStringPair <Bank>, 4> Banks
-            {
-                    {
-                            {Bank::ANZ, "api.anz"},
-                            {Bank::CBA, "api.commbank.com.au"},
-                            {Bank::NAB, "openbank.api.nab.com.au"},
-                            {Bank::WBC, "digital-api.westpac.com.au"}
-                    }
-            };
 
     const std::array<const EnumStringPair <Effective>, 3> EffectiveFields
             {
