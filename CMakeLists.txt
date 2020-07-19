@@ -28,7 +28,7 @@ find_package(GTest REQUIRED)
 include(GoogleTest)
 
 set(TEST_TARGET ${PROJECT_NAME}_test)
-add_executable(${TEST_TARGET} test/v1/deserialize.cpp test/v1/helpers.hpp test/v1/helpers.cpp)
+add_executable(${TEST_TARGET} test/v1/deserialize.cpp test/v1/helpers.hpp test/v1/helpers.cpp test/v1/serialize.cpp)
 target_link_libraries(${TEST_TARGET} GTest::GTest GTest::Main)
 target_link_libraries(${TEST_TARGET} regime)
 gtest_discover_tests(${TEST_TARGET})
