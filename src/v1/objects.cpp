@@ -10,7 +10,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr Links::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "self", self);
         return json;
     }
@@ -26,7 +26,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr LinksPaginated::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "self", self);
         add(json, "first", first);
         add(json, "prev", previous);
@@ -43,7 +43,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr MetaPaginated::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "totalRecords", total_records);
         add(json, "totalPages", total_pages);
         return json;

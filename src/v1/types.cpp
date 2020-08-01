@@ -15,7 +15,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CommonPerson::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "lastUpdatedTime", last_updated_time);
         add(json, "firstName", first_name);
         add(json, "lastName", last_name);
@@ -39,7 +39,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CommonPhoneNumber::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "isPreferred", is_preferred);
         add(json, "purpose", PhoneNumberPurposes, purpose);
         add(json, "countryCode", country_code);
@@ -58,7 +58,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CommonEmailAddress::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "isPreferred", is_preferred);
         add(json, "purpose", EmailAddressPurposes, purpose);
         add(json, "Regime::Utils::address", address);
@@ -79,7 +79,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CommonSimpleAddress::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "mailingName", mailing_name);
         add(json, "addressLine1", address_line1);
         add(json, "addressLine2", address_line2);
@@ -119,7 +119,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CommonPAFAddress::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "dpid", dpid);
         add(json, "thoroughfareNumber1", thoroughfare_number1);
         add(json, "thoroughfareNumber1Suffix", thoroughfare_number1_suffix);
@@ -153,7 +153,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CommonPhysicalAddress::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "addressUType", AddressUTypes, address_u_type);
         add(json, "simple", simple);
         add(json, "paf", paf);
@@ -185,7 +185,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CommonPersonDetail::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "phoneNumbers", phone_numbers);
         add(json, "emailAddresses", email_addresses);
         add(json, "physicalAddresses", physical_addresses);
@@ -212,7 +212,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CommonOrganisation::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "lastUpdateTime", last_update_time);
         add(json, "agentFirstName", agent_first_name);
         add(json, "agentLastName", agent_last_name);
@@ -255,7 +255,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductBundle::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "name", name);
         add(json, "description", description);
         add(json, "additionalInfo", additional_info);
@@ -274,7 +274,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductFeature::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "featureType", FeatureTypes, feature_type);
         add(json, "additionalValue", additional_value);
         add(json, "additionalInfo", additional_info);
@@ -292,7 +292,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductConstraint::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "constraintType", ConstraintTypes, constraint_type);
         add(json, "additionalValue", additional_value);
         add(json, "additionalInfo", additional_info);
@@ -310,7 +310,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductEligibility::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "eligibilityType", EligibilityTypes, eligibility_type);
         add(json, "additionalValue", additional_value);
         add(json, "additionalInfo", additional_info);
@@ -328,7 +328,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductDiscountEligibility::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "discountEligibilityType", DiscountEligibilityTypes, discount_eligibility_type);
         add(json, "additionalValue", additional_value);
         add(json, "additionalInfo", additional_info);
@@ -353,7 +353,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductDiscount::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "description", description);
         add(json, "discountType", DiscountTypes, discount_type);
         add(json, "amount", amount);
@@ -386,7 +386,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductFee::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "name", name);
         add(json, "feeType", FeeTypes, fee_type);
         add(json, "amount", amount);
@@ -410,7 +410,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductRateCondition::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "additionalInfo", additional_info);
         add(json, "additionalInfoUri", additional_info_uri);
         return json;
@@ -428,7 +428,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductRateSubTier::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "name", name);
         add(json, "unitOfMeasure", UnitsOfMeasure, unit_of_measure);
         add(json, "minimumValue", minimum_value);
@@ -451,7 +451,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductRateTier::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "name", name);
         add(json, "unitOfMeasure", UnitsOfMeasure, unit_of_measure);
         add(json, "minimumValue", minimum_value);
@@ -476,7 +476,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductDepositRate::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "depositRateType", DepositRateTypes, deposit_rate_type);
         add(json, "rate", rate);
         add(json, "calculationFrequency", calculation_frequency);
@@ -504,7 +504,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductLendingRate::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "lendingRateType", LendingRateTypes, lending_rate_type);
         add(json, "rate", rate);
         add(json, "comparisonRate", comparison_rate);
@@ -533,7 +533,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingAccount::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "accountId", account_id);
         add(json, "creationDate", creation_date);
         add(json, "displayName", display_name);
@@ -557,7 +557,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingTermDepositAccount::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "lodgementDate", lodgement_date);
         add(json, "maturityDate", maturity_date);
         add(json, "maturityAmount", maturity_amount);
@@ -576,7 +576,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingCreditCardAccount::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "minPaymentAmount", min_payment_amount);
         add(json, "paymentDueAmount", payment_due_date);
         add(json, "paymentCurrency", payment_currency);
@@ -605,7 +605,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingLoanAccount::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "originalStartDate", original_start_date);
         add(json, "originalLoanAmount", original_start_date);
         add(json, "originalLoanCurrency", original_start_date);
@@ -688,7 +688,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingTransaction::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "accountId", account_id);
         add(json, "transactionId", transaction_id);
         add(json, "isDetailAvailable", is_detail_available);
@@ -732,7 +732,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingBalancePurse::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "amount", amount);
         add(json, "currency", currency);
         return json;
@@ -751,7 +751,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingBalance::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "accountId", account_id);
         add(json, "currentBalance", current_balance);
         add(json, "availableBalance", available_balance);
@@ -773,7 +773,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingPayee::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "payeeId", payee_id);
         add(json, "nickname", payee_id);
         add(json, "description", payee_id);
@@ -791,7 +791,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingDomesticPayeeAccount::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "accountName", account_name);
         add(json, "bsb", bsb);
         add(json, "accountNumber", account_number);
@@ -805,7 +805,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingDomesticPayeeCard::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "cardNumber", card_number);
         return json;
     }
@@ -819,7 +819,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingDomesticPayeePayId::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "name", name);
         add(json, "identifier", identifier);
         add(json, "type", PayIdTypes, type);
@@ -836,7 +836,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingDomesticPayee::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "payeeAccountUType", PayeeAccountUTypes, payee_account_u_type);
         add(json, "account", account);
         add(json, "card", card);
@@ -853,7 +853,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingBillerPayee::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "billerCode", biller_code);
         add(json, "crn", crn);
         add(json, "billerName", biller_name);
@@ -868,7 +868,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingInternationalPayee::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "beneficiaryDetails", beneficiary_details);
         add(json, "bankDetails", bank_details);
         return json;
@@ -905,7 +905,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingAuthorisedEntity::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "description", description);
         add(json, "financialInstitution", financial_institution);
         add(json, "abn", abn);
@@ -924,7 +924,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingDirectDebit::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "accountId", account_id);
         add(json, "authorisedEntity", authorised_entity);
         add(json, "lastDebitDateTime", last_debit_date_time);
@@ -944,7 +944,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentTo::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "toUType", ToUTypes, to_u_type);
         add(json, "accountId", account_id);
         add(json, "payeeId", payee_id);
@@ -964,7 +964,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentSet::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "to", to);
         add(json, "isAmountCalculated", is_amount_calculated);
         add(json, "amount", amount);
@@ -979,7 +979,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentFrom::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "accountId", account_id);
         return json;
     }
@@ -992,7 +992,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentInterval::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "interval", interval);
         add(json, "dayInInterval", day_in_interval);
         return json;
@@ -1008,7 +1008,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentRecurrenceIntervalSchedule::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "finalPaymentDate", final_payment_date);
         add(json, "paymentsRemaining", payments_remaining);
         add(json, "nonBusinessDayTreatment", NonBusinessDayTreatments, non_business_day_treatment);
@@ -1027,7 +1027,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentRecurrenceLastWeekday::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "finalPaymentDate", final_payment_date);
         add(json, "paymentsRemaining", payments_remaining);
         add(json, "interval", interval);
@@ -1043,7 +1043,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentRecurrenceEventBased::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "description", description);
         return json;
     }
@@ -1055,7 +1055,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentRecurrenceOnceOff::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "paymentDate", payment_date);
         return json;
     }
@@ -1072,7 +1072,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentRecurrence::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "nextPaymentDate", next_payment_date);
         add(json, "recurrenceUType", RecurrenceUTypes, recurrence_u_type);
         add(json, "onceOff", once_off);
@@ -1096,7 +1096,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPayment::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "scheduledPaymentId", scheduled_payment_id);
         add(json, "nickname", nickname);
         add(json, "payerReference", payer_reference);
@@ -1127,7 +1127,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductV2::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "productId", product_id);
         add(json, "lastUpdated", last_updated);
         add(json, "productCategory", ProductCategories, product_category);
@@ -1159,7 +1159,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductDetail::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "product", product);
         add(json, "bundles", bundles);
         add(json, "features", features);
@@ -1182,7 +1182,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductFeatureToggled::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "featureType", FeatureTypes, feature_type);
         add(json, "additionalValue", additional_value);
         add(json, "additionalInfo", additional_info);
@@ -1200,7 +1200,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr x2p101Payload::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "extendedDescription", extended_description);
         add(json, "endToEndId", end_to_end_id);
         add(json, "purposeCode", purpose_code);
@@ -1218,7 +1218,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr ExtendedData::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "service", TransactionOverlayServices, service);
         add(json, "payer", payer);
         add(json, "payee", payee);
@@ -1236,7 +1236,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BeneficiaryDetails::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "name", name);
         add(json, "country", country);
         add(json, "message", message);
@@ -1258,7 +1258,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankDetails::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "country", country);
         add(json, "accountNumber", account_number);
         add(json, "bankAddress", bank_address);
@@ -1279,7 +1279,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankAddress::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "name", name);
         add(json, "address", address);
         return json;
@@ -1293,7 +1293,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr CardArt::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "imageUri", image_uri);
         add(json, "title", title);
         return json;
@@ -1310,7 +1310,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr AdditionalInformation::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "overviewUri", overview_uri);
         add(json, "termsUri", terms_uri);
         add(json, "eligibilityUri", eligibility_uri);

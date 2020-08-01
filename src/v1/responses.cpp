@@ -24,7 +24,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductList::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "products", products);
         return json;
     }
@@ -36,7 +36,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingAccountList::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "accounts", accounts);
         return json;
     }
@@ -48,7 +48,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingTransactionList::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "transactions", transactions);
         return json;
     }
@@ -60,7 +60,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingAccountsBalanceList::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "balances", balances);
         return json;
     }
@@ -72,7 +72,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingPayeeList::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "payees", payees);
         return json;
     }
@@ -84,7 +84,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingDirectDebitAuthorisationList::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "directDebitAuthorisations", direct_debit_authorisations);
         return json;
     }
@@ -96,7 +96,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingScheduledPaymentsList::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "scheduledPayments", scheduled_payments);
         return json;
     }

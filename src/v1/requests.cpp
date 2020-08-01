@@ -21,7 +21,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr AccountIds::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "accountIds", account_ids);
         return json;
     }
