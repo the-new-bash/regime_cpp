@@ -128,6 +128,7 @@ namespace regime::v1
         add(json, "flatUnitType", flat_unit_type);
         add(json, "flatUnitNumber", flat_unit_number);
         add(json, "floorLevelType", floor_level_type);
+        add(json, "floorLevelNumber", floor_level_number);
         add(json, "lotNumber", lot_number);
         add(json, "buildingName1", building_name1);
         add(json, "buildingName2", building_name2);
@@ -607,18 +608,18 @@ namespace regime::v1
     {
         Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "originalStartDate", original_start_date);
-        add(json, "originalLoanAmount", original_start_date);
-        add(json, "originalLoanCurrency", original_start_date);
-        add(json, "loanEndDate", original_start_date);
-        add(json, "nextInstalmentDate", original_start_date);
-        add(json, "minInstalmentAmount", original_start_date);
-        add(json, "minInstalmentCurrency", original_start_date);
-        add(json, "maxRedraw", original_start_date);
-        add(json, "maxRedrawCurrency", original_start_date);
-        add(json, "minRedraw", original_start_date);
-        add(json, "minRedrawCurrency", original_start_date);
-        add(json, "offsetAccountEnabled", original_start_date);
-        add(json, "offsetAccountIds", original_start_date);
+        add(json, "originalLoanAmount", original_loan_amount);
+        add(json, "originalLoanCurrency", original_loan_currency);
+        add(json, "loanEndDate", loan_end_date);
+        add(json, "nextInstalmentDate", next_instalment_date);
+        add(json, "minInstalmentAmount", min_instalment_amount);
+        add(json, "minInstalmentCurrency", min_instalment_currency);
+        add(json, "maxRedraw", max_redraw);
+        add(json, "maxRedrawCurrency", max_redraw_currency);
+        add(json, "minRedraw", min_redraw);
+        add(json, "minRedrawCurrency", min_redraw_currency);
+        add(json, "offsetAccountEnabled", offset_account_enabled);
+        add(json, "offsetAccountIds", offset_account_ids);
         add(json, "repaymentType", RepaymentTypes, repayment_type);
         add(json, "repaymentFrequency", repayment_frequency);
         return json;
@@ -1159,8 +1160,7 @@ namespace regime::v1
 
     Poco::JSON::Object::Ptr BankingProductDetail::to_json() const
     {
-        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
-        add(json, "product", product);
+        Poco::JSON::Object::Ptr json = product->to_json();
         add(json, "bundles", bundles);
         add(json, "features", features);
         add(json, "constraints", constraints);

@@ -22,7 +22,7 @@ namespace regime::v1
         {};
 
         [[nodiscard]] Poco::JSON::Object::Ptr to_json() const override
-        { return Poco::JSON::Object::Ptr(); };
+        { return new Poco::JSON::Object; };
     };
 
     struct Links : public IObject

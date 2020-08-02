@@ -37,7 +37,7 @@ namespace regime::v1
     template<class Data, class Meta>
     Poco::JSON::Object::Ptr Request<Data, Meta>::to_json() const
     {
-        Poco::JSON::Object::Ptr json;
+        Poco::JSON::Object::Ptr json = new Poco::JSON::Object;
         add(json, "data", data);
         add(json, "meta", meta.value());
         return json;
