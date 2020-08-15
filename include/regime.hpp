@@ -4,19 +4,17 @@
 #include "v1/responses.hpp"
 #include "v1/requests.hpp"
 
-namespace regime
-{
+namespace regime {
     using namespace v1;
 
-    enum class Bank
-    {
+    enum class Bank {
         ANZ,
         CBA,
         NAB,
         WBC,
     };
 
-    const std::array<const EnumStringPair <Bank>, 4> Banks
+    const std::array<const EnumStringPair<Bank>, 4> Banks
             {
                     {
                             {Bank::ANZ, "api.anz"},
@@ -26,13 +24,12 @@ namespace regime
                     }
             };
 
-    class Client
-    {
+    class Client {
     public:
         Client(const unsigned int &version) :
                 _version{version},
-                _context{new Poco::Net::Context(Poco::Net::Context::CLIENT_USE, "", Poco::Net::Context::VERIFY_NONE)}
-        {};
+                _context{
+                        new Poco::Net::Context(Poco::Net::Context::CLIENT_USE, "", Poco::Net::Context::VERIFY_NONE)} {};
 
         virtual ~Client() = default;
 
@@ -156,11 +153,25 @@ namespace regime
                 std::optional<std::string> min_version = std::nullopt) const;
 
     protected:
+        Poco::JSON::Object::Ptr request(
+                const Poco::URI &uri,
+                const std::string &version,
+                std::optional<std::string> min_version,
+                const std::string &body = "") const;
+
+        template<class R>
+        void request_paginated(
+                const Poco::URI &uri,
+                const std::string &version,
+                std::optional<std::string> min_version,
+                std::function<void(const R &)> handler,
+                const std::string &body = "") const;
+
+        std::string get_uri(Bank bank, const std::string &resource) const;
+
         static const unsigned int MAXIMUM_PAGE_SIZE = 1000;
 
     private:
-        std::string get_uri(Bank bank, const std::string &resource) const;
-
         const unsigned int _version;
         const Poco::Net::Context::Ptr _context;
     };
