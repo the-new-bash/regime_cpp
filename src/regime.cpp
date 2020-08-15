@@ -607,7 +607,7 @@ namespace regime {
             URI temp{uri};
             temp.addQueryParameter("page", std::to_string(page));
             temp.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
-            auto ret = request(temp, version, min_version);
+            auto ret = request(temp, version, min_version, body);
             resp.deserialize(ret);
             handler(resp);
             total_pages = resp.meta.value().total_pages;
