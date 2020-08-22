@@ -1,6 +1,8 @@
 #include <utility>
 
 #include "Poco/Net/Context.h"
+#include "Poco/Net/HTTPSClientSession.h"
+#include "Poco/URI.h"
 #include "v1/responses.hpp"
 #include "v1/requests.hpp"
 
@@ -153,26 +155,29 @@ namespace regime {
                 std::optional<std::string> min_version = std::nullopt) const;
 
     protected:
-        Poco::JSON::Object::Ptr request(
-                const Poco::URI &uri,
-                const std::string &version,
-                std::optional<std::string> min_version,
-                const std::string &body = "") const;
-
         template<class R>
-        void request_paginated(
-                const Poco::URI &uri,
-                const std::string &version,
-                std::optional<std::string> min_version,
-                std::function<void(const R &)> handler,
-                const std::string &body = "") const;
+        void get(const Poco::URI &uri,
+                 const std::string &version,
+                 std::optional<std::string> min_version,
+                 std::function<void(const R &)> handler,
+                 bool paginated,
+                 const std::string &body = "") const;
 
-        std::string get_uri(Bank bank, const std::string &resource) const;
+        template<typename T, typename = int>
+        struct is_paginated : std::false_type {
+        };
+
+        template<typename T>
+        struct is_paginated<T, decltype((void) T::total_pages, 0)> : std::true_type {
+        };
+
+        [[nodiscard]] std::string get_uri(Bank bank, const std::string &resource) const;
 
         static const unsigned int MAXIMUM_PAGE_SIZE = 1000;
 
     private:
         const unsigned int _version;
         const Poco::Net::Context::Ptr _context;
+
     };
 }

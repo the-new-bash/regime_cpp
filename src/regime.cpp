@@ -39,11 +39,11 @@ namespace regime {
             uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
         if (is_owned.has_value())
             uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
-        request_paginated<ResponseBankingAccountList>(uri, version, std::move(min_version),
-                                                      [&result](const ResponseBankingAccountList &resp) {
-                                                          result.insert(result.end(), resp.data.accounts.begin(),
-                                                                        resp.data.accounts.end());
-                                                      });
+        get<ResponseBankingAccountList>(uri, version, std::move(min_version),
+                                        [&result](const ResponseBankingAccountList &resp) {
+                                            result.insert(result.end(), resp.data.accounts.begin(),
+                                                          resp.data.accounts.end());
+                                        }, true);
         return result;
     }
 
@@ -76,10 +76,10 @@ namespace regime {
             uri.addQueryParameter("open-status", get_string(OpenStatuses, open_status.value()));
         if (is_owned.has_value())
             uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
-        request_paginated<ResponseBankingAccountsBalanceList>(uri, version, std::move(min_version), [&result](
+        get<ResponseBankingAccountsBalanceList>(uri, version, std::move(min_version), [&result](
                 const ResponseBankingAccountsBalanceList &resp) {
             result.insert(result.end(), resp.data.balances.begin(), resp.data.balances.end());
-        });
+        }, true);
         return result;
     }
 
@@ -107,13 +107,13 @@ namespace regime {
         accounts.data.account_ids = account_ids;
         auto body = static_cast<Poco::DynamicStruct>(*accounts.to_json()).toString();
         std::vector<BankingBalance> result;
-        request_paginated<ResponseBankingAccountsBalanceList>(uri, version, std::move(min_version),
-                                                              [&result](
-                                                                      const ResponseBankingAccountsBalanceList &resp) {
-                                                                  result.insert(result.end(),
-                                                                                resp.data.balances.begin(),
-                                                                                resp.data.balances.end());
-                                                              }, body);
+        get<ResponseBankingAccountsBalanceList>(uri, version, std::move(min_version),
+                                                [&result](
+                                                        const ResponseBankingAccountsBalanceList &resp) {
+                                                    result.insert(result.end(),
+                                                                  resp.data.balances.begin(),
+                                                                  resp.data.balances.end());
+                                                }, true, body);
         return result;
     }
 
@@ -135,10 +135,12 @@ namespace regime {
     BankingBalance Client::get_account_balance(Bank bank, const std::string &account_id, const std::string &version,
                                                std::optional<std::string> min_version) const {
         URI uri(get_uri(bank, "accounts/" + account_id + "/balance"));
-        auto ret = request(uri, version, std::move(min_version));
-        ResponseBankingAccountsBalanceById resp;
-        resp.deserialize(ret);
-        return resp.data;
+        BankingBalance result;
+        get<ResponseBankingAccountsBalanceById>(uri, version, std::move(min_version),
+                                                [&result](const ResponseBankingAccountsBalanceById &resp) {
+                                                    result = resp.data;
+                                                }, false);
+        return result;
     }
 
 /**
@@ -160,10 +162,12 @@ namespace regime {
     Client::get_account_detail(Bank bank, const std::string &account_id, const std::string &version,
                                std::optional<std::string> min_version) const {
         URI uri(get_uri(bank, "accounts/" + account_id));
-        auto ret = request(uri, version, std::move(min_version));
-        ResponseBankingAccountById resp;
-        resp.deserialize(ret);
-        return resp.data;
+        BankingAccountDetail result;
+        get<ResponseBankingAccountById>(uri, version, std::move(min_version),
+                                        [&result](const ResponseBankingAccountById &resp) {
+                                            result = resp.data;
+                                        }, false);
+        return result;
     }
 
 /**
@@ -206,12 +210,12 @@ namespace regime {
         if (text.has_value())
             uri.addQueryParameter("text", text.value());
         std::vector<BankingTransaction> result;
-        request_paginated<ResponseBankingTransactionList>(uri, version, std::move(min_version),
-                                                          [&result](const ResponseBankingTransactionList &resp) {
-                                                              result.insert(result.end(),
-                                                                            resp.data.transactions.begin(),
-                                                                            resp.data.transactions.end());
-                                                          });
+        get<ResponseBankingTransactionList>(uri, version, std::move(min_version),
+                                            [&result](const ResponseBankingTransactionList &resp) {
+                                                result.insert(result.end(),
+                                                              resp.data.transactions.begin(),
+                                                              resp.data.transactions.end());
+                                            }, true);
         return result;
     }
 
@@ -235,10 +239,12 @@ namespace regime {
     Client::get_transaction_detail(Bank bank, const std::string &account_id, const std::string &transaction_id,
                                    const std::string &version, std::optional<std::string> min_version) const {
         URI uri(get_uri(bank, "accounts/" + account_id + "/transactions/" + transaction_id));
-        auto ret = request(uri, version, std::move(min_version));
-        ResponseBankingTransactionById resp;
-        resp.deserialize(ret);
-        return resp.data;
+        BankingTransactionDetail result;
+        get<ResponseBankingTransactionById>(uri, version, std::move(min_version),
+                                            [&result](const ResponseBankingTransactionById &resp) {
+                                                result = resp.data;
+                                            }, false);
+        return result;
     }
 
 /**
@@ -262,12 +268,12 @@ namespace regime {
 
         URI uri(get_uri(bank, "accounts/" + account_id + "/direct-debits"));
         std::vector<BankingDirectDebit> result;
-        request_paginated<ResponseBankingDirectDebitAuthorisationList>(uri, version, std::move(min_version), [&result](
+        get<ResponseBankingDirectDebitAuthorisationList>(uri, version, std::move(min_version), [&result](
                 const ResponseBankingDirectDebitAuthorisationList &resp) {
             result.insert(
                     result.end(), resp.data.direct_debit_authorisations.begin(),
                     resp.data.direct_debit_authorisations.end());
-        });
+        }, true);
         return result;
     }
 
@@ -301,12 +307,12 @@ namespace regime {
         if (is_owned.has_value())
             uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
         std::vector<BankingDirectDebit> result;
-        request_paginated<ResponseBankingDirectDebitAuthorisationList>(uri, version, std::move(min_version), [&result](
+        get<ResponseBankingDirectDebitAuthorisationList>(uri, version, std::move(min_version), [&result](
                 const ResponseBankingDirectDebitAuthorisationList &resp) {
             result.insert(
                     result.end(), resp.data.direct_debit_authorisations.begin(),
                     resp.data.direct_debit_authorisations.end());
-        });
+        }, true);
         return result;
     }
 
@@ -334,12 +340,12 @@ namespace regime {
         accounts.data.account_ids = account_ids;
         auto body = static_cast<Poco::DynamicStruct>(*accounts.to_json()).toString();
         std::vector<BankingDirectDebit> result;
-        request_paginated<ResponseBankingDirectDebitAuthorisationList>(uri, version, std::move(min_version), [&result](
+        get<ResponseBankingDirectDebitAuthorisationList>(uri, version, std::move(min_version), [&result](
                 const ResponseBankingDirectDebitAuthorisationList &resp) {
             result.insert(
                     result.end(), resp.data.direct_debit_authorisations.begin(),
                     resp.data.direct_debit_authorisations.end());
-        }, body);
+        }, true, body);
         return result;
     }
 
@@ -363,10 +369,10 @@ namespace regime {
                                                std::optional<std::string> min_version) const {
         URI uri(get_uri(bank, "accounts/" + account_id + "/payments/scheduled"));
         std::vector<BankingScheduledPayment> result;
-        request_paginated<ResponseBankingScheduledPaymentsList>(uri, version, std::move(min_version), [&result](
+        get<ResponseBankingScheduledPaymentsList>(uri, version, std::move(min_version), [&result](
                 const ResponseBankingScheduledPaymentsList &resp) {
             result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
-        });
+        }, true);
         return result;
     }
 
@@ -399,13 +405,13 @@ namespace regime {
         if (is_owned.has_value())
             uri.addQueryParameter("is-owned", is_owned.value() ? "true" : "false");
         std::vector<BankingScheduledPayment> result;
-        request_paginated<ResponseBankingScheduledPaymentsList>(uri, version, std::move(min_version),
-                                                                [&result](
-                                                                        const ResponseBankingScheduledPaymentsList &resp) {
-                                                                    result.insert(result.end(),
-                                                                                  resp.data.scheduled_payments.begin(),
-                                                                                  resp.data.scheduled_payments.end());
-                                                                });
+        get<ResponseBankingScheduledPaymentsList>(uri, version, std::move(min_version),
+                                                  [&result](
+                                                          const ResponseBankingScheduledPaymentsList &resp) {
+                                                      result.insert(result.end(),
+                                                                    resp.data.scheduled_payments.begin(),
+                                                                    resp.data.scheduled_payments.end());
+                                                  }, true);
 
         return result;
     }
@@ -434,10 +440,10 @@ namespace regime {
         accounts.data.account_ids = account_ids;
         auto body = static_cast<Poco::DynamicStruct>(*accounts.to_json()).toString();
         std::vector<BankingScheduledPayment> result;
-        request_paginated<ResponseBankingScheduledPaymentsList>(uri, version, std::move(min_version), [&result](
+        get<ResponseBankingScheduledPaymentsList>(uri, version, std::move(min_version), [&result](
                 const ResponseBankingScheduledPaymentsList &resp) {
             result.insert(result.end(), resp.data.scheduled_payments.begin(), resp.data.scheduled_payments.end());
-        }, body);
+        }, true, body);
         return result;
     }
 
@@ -463,11 +469,11 @@ namespace regime {
         if (type.has_value())
             uri.addQueryParameter("type", get_string(PayeeTypes, type.value()));
         std::vector<BankingPayee> result;
-        request_paginated<ResponseBankingPayeeList>(uri, version, std::move(min_version),
-                                                    [&result](const ResponseBankingPayeeList &resp) {
-                                                        result.insert(result.end(), resp.data.payees.begin(),
-                                                                      resp.data.payees.end());
-                                                    });
+        get<ResponseBankingPayeeList>(uri, version, std::move(min_version),
+                                      [&result](const ResponseBankingPayeeList &resp) {
+                                          result.insert(result.end(), resp.data.payees.begin(),
+                                                        resp.data.payees.end());
+                                      }, true);
         return result;
     }
 
@@ -489,10 +495,12 @@ namespace regime {
     BankingPayeeDetail Client::get_payee_detail(Bank bank, const std::string &payee_id, const std::string &version,
                                                 std::optional<std::string> min_version) const {
         URI uri(get_uri(bank, "payees/" + payee_id));
-        auto ret = request(uri, version, std::move(min_version));
-        ResponseBankingPayeeById resp;
-        resp.deserialize(ret);
-        return resp.data;
+        BankingPayeeDetail result;
+        get<ResponseBankingPayeeById>(uri, version, std::move(min_version),
+                                      [&result](const ResponseBankingPayeeById &resp) {
+                                          result = resp.data;
+                                      }, false);
+        return result;
     }
 
 /**
@@ -532,11 +540,11 @@ namespace regime {
         if (product_category.has_value())
             uri.addQueryParameter("product-category", get_string(ProductCategories, product_category.value()));
         std::vector<BankingProductV2> result;
-        request_paginated<ResponseBankingProductList>(uri, version, std::move(min_version),
-                                                      [&result](const ResponseBankingProductList &resp) {
-                                                          result.insert(result.end(), resp.data.products.begin(),
-                                                                        resp.data.products.end());
-                                                      });
+        get<ResponseBankingProductList>(uri, version, std::move(min_version),
+                                        [&result](const ResponseBankingProductList &resp) {
+                                            result.insert(result.end(), resp.data.products.begin(),
+                                                          resp.data.products.end());
+                                        }, false);
         return result;
     }
 
@@ -560,10 +568,12 @@ namespace regime {
                                                      const std::string &version,
                                                      std::optional<std::string> min_version) const {
         URI uri(get_uri(bank, "products/" + product_id));
-        auto ret = request(uri, version, std::move(min_version));
-        ResponseBankingProductById resp;
-        resp.deserialize(ret);
-        return resp.data;
+        BankingProductDetail result;
+        get<ResponseBankingProductById>(uri, version, std::move(min_version),
+                                        [&result](const ResponseBankingProductById &resp) {
+                                            result = resp.data;
+                                        }, false);
+        return result;
     }
 
     std::string Client::get_uri(Bank bank, const std::string &resource) const {
@@ -577,40 +587,43 @@ namespace regime {
         return stream.str();
     }
 
-    Poco::JSON::Object::Ptr
-    Client::request(const URI &uri, const std::string &version, std::optional<std::string> min_version,
-                    const std::string &body) const {
-        Poco::JSON::Parser parser;
-        Net::HTTPResponse res;
-        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
-        Net::HTTPRequest req(Net::HTTPRequest::HTTP_GET, uri.getPathAndQuery(), Net::HTTPMessage::HTTP_1_1);
-        req.setContentType("application/json");
-        if (!body.empty())
-            req.setContentLength(body.length());
-        req.add("x-v", version);
-        if (min_version.has_value())
-            req.add("x-min-v", min_version.value());
-        std::ostream &o = session.sendRequest(req);
-        if (!body.empty())
-            o << body;
-        std::istream &s = session.receiveResponse(res);
-        return parser.parse(s).extract<JSON::Object::Ptr>();
-    }
-
     template<class R>
     void
-    Client::request_paginated(const URI &uri, const std::string &version, std::optional<std::string> min_version,
-                              std::function<void(const R &)> handler, const std::string &body) const {
-        R resp;
+    Client::get(const URI &uri, const std::string &version, std::optional<std::string> min_version,
+                std::function<void(const R &)> handler, bool paginated, const std::string &body) const {
+        Net::HTTPRequest req(Net::HTTPMessage::HTTP_1_1);
+        req.setMethod(Net::HTTPRequest::HTTP_GET);
+        req.setContentType("application/json");
+        req.add("x-v", version);
+        if (!body.empty())
+            req.setContentLength(body.length());
+        if (min_version.has_value())
+            req.add("x-min-v", min_version.value());
+
+        R cdr_resp;
+        Net::HTTPResponse res;
+        Poco::JSON::Parser parser;
+        Net::HTTPSClientSession session(uri.getHost(), uri.getPort(), _context);
         unsigned int page = 1, total_pages;
         do {
             URI temp{uri};
-            temp.addQueryParameter("page", std::to_string(page));
-            temp.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
-            auto ret = request(temp, version, min_version, body);
-            resp.deserialize(ret);
-            handler(resp);
-            total_pages = resp.meta.value().total_pages;
+            if (paginated)
+            {
+                temp.addQueryParameter("page", std::to_string(page));
+                temp.addQueryParameter("page-size", std::to_string(MAXIMUM_PAGE_SIZE));
+            }
+            req.setURI(uri.getPathAndQuery());
+            std::ostream &o = session.sendRequest(req);
+            if (!body.empty())
+                o << body;
+            std::istream &s = session.receiveResponse(res);
+            auto ret = parser.parse(s).extract<JSON::Object::Ptr>();
+            cdr_resp.deserialize(ret);
+            handler(cdr_resp);
+            if constexpr (is_paginated<decltype(cdr_resp.meta.value())>::value)
+                total_pages = cdr_resp.meta.value().total_pages;
+            else
+                total_pages = 1;
         } while (++page <= total_pages);
     }
 }
